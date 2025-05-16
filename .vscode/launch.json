@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Khannps39199Application<khannps39199>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "khannps39199.khannps39199.Khannps39199Application",
+            "projectName": "khannps39199",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

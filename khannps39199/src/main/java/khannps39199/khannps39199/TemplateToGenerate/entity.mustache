@@ -1,0 +1,17 @@
+package {{packageName}};
+
+import javax.persistence.*;
+import java.time.*;
+import java.math.*;
+
+@Entity
+@Table(name = "{{tableName}}")
+public class {{className}} {
+
+{{#fields}}
+    @Column(name = "{{columnName}}")
+    private {{javaType}} {{fieldName}};
+{{/fields}}
+
+    // Getters and setters...
+}

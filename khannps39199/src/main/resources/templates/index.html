@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+
+  <body>
+    <form th:action="@{/connectSQL}" method="post" th:object="${connectInfo}">
+      <label for="username"> Username</label>
+      <input type="text" class="username" name="username" th:field="*{userName}"/><br />
+
+      <label for="password"> password</label>
+      <input type="password" class="password" name="password" th:field="*{password}"/><br />
+      <label for="Database"> Database</label>
+      <input type="text" class="text" name="database" th:field="*{dbName}" th:value="${ listDB==null ?'master':''}" />
+      <select name="databaseSelect" id="database" th:field="*{dbName}">
+
+        <option disabled selected value="">-- Select Database --</option>
+        <option 
+          th:each="item : ${listDB}"
+          th:value="${item}"
+          th:text="${item}"
+        ></option>
+      </select>
+      <button type="submit">connect</button>
+    </form>
+    <form th:action="@{/getAllTableFormSelectedDB}" method="post" th:object="${connectInfo}">
+      <label for="username"> Username</label>
+      <input type="text" class="username" name="username" th:field="*{userName}"/><br />
+
+      <label for="password"> password</label>
+      <input type="password" class="password" name="password" th:field="*{password}"/><br />
+      <label for="Database"> Database</label>
+      <input type="text" class="text" name="database" th:field="*{dbName}" th:value="${ listDB==null ?'master':''}" />
+      <select name="databaseSelect" id="database" th:field="*{dbName}">
+
+        <option disabled selected value="">-- Select Database --</option>
+        <option 
+          th:each="item : ${listDB}"
+          th:value="${item}"
+          th:text="${item}"
+        ></option>
+      </select>
+      <select name="tableSelect" id="tableSelect" th:field="*{tblName}">
+
+        <option disabled selected value="">-- Select tableSelect --</option>
+        <option 
+          th:each="item : ${listtBL}"
+          th:value="${item}"
+          th:text="${item}"
+        ></option>
+      </select>
+      <button type="submit">select</button>
+    </form>
+    
+
+  </body>
+</html>
