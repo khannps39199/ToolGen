@@ -8,12 +8,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 
 import jakarta.servlet.http.HttpServletRequest;
 import khannps39199.khannps39199.Model.ConnectInfo;
 import khannps39199.khannps39199.Model.ConnectInfoHolder;
+
 
 @Controller
 public class ToolAutoGenSiteController {
@@ -30,7 +32,10 @@ public class ToolAutoGenSiteController {
     public String getMethodName(Model model) {
 
         model.addAttribute("connectInfo", new ConnectInfo());
-        return "index";
+         List<String> listDB = getAllTables.getAllDatabases();
+        model.addAttribute("listDB", listDB);
+        model.addAttribute("Component", "ConnectAndSelectDB");
+        return "ExtendLayout";
     }
 
     @PostMapping("/connectSQL")
@@ -56,6 +61,7 @@ public class ToolAutoGenSiteController {
         return "redirect:/getAllTableFormSelectedDB";
     }
 
+
     @PostMapping("/getAllTableFormSelectedDB")
     public String getAllTableFormSelectedDB(Model model) {
         ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
@@ -69,6 +75,29 @@ public class ToolAutoGenSiteController {
         model.addAttribute("listDB", listDB);
         model.addAttribute("listtBL", listtBL);
         return "index";
+    }
+    @GetMapping("/getAllTableFormSelectedDB")
+    public String getAllTableFormSelectedDBLayout(Model model) {
+        
+        ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+        if(conInfo==null||conInfo.getTblName()== null ){
+            return "redirect:/Home";
+        }
+         List<String> listDB = getAllTables.getAllDatabases();
+         List<String> listtBL = getAllTables.getAllTableNames();
+        model.addAttribute("listDB", listDB);
+        model.addAttribute("connectInfo", conInfo);
+        model.addAttribute("listtBL", listtBL);
+        model.addAttribute("Component", "SelectTableComponent");
+        return "ExtendLayout";
+    }
+    @GetMapping("/customTableComlumnToGenerate")
+    public String getCustomTableComlumnToGenerate(@RequestParam String param) {
+        return new String();
+    }
+    @PostMapping("/customTableComlumnToGenerate")
+    public String PostCustomTableComlumnToGenerate(@RequestParam String param) {
+        return new String();
     }
     
 

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ConnectInfoHolder {
+    
     private ConnectInfo connectInfo;
 
     public ConnectInfo getConnectInfo() {
