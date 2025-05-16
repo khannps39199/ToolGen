@@ -1,17 +1,22 @@
 package {{packageName}};
+import jakarta.persistence.*;
 
-import javax.persistence.*;
 import java.time.*;
 import java.math.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "{{tableName}}")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class {{className}} {
-
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
 {{#fields}}
     @Column(name = "{{columnName}}")
     private {{javaType}} {{fieldName}};
 {{/fields}}
-
-    // Getters and setters...
 }

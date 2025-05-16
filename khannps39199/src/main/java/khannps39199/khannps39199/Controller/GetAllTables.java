@@ -8,10 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +24,8 @@ public class GetAllTables {
     @Autowired
     SQLServerDataSource ds;
 
-    public List<ColumnInfo> getTableColumns(String tableName) throws SQLException {
+    public List<ColumnInfo> getTableColumns( String tableName) throws SQLException {
+        
         List<ColumnInfo> columns = new ArrayList<>();
         try (Connection conn = ds.getConnection()) {
             DatabaseMetaData metaData = conn.getMetaData();

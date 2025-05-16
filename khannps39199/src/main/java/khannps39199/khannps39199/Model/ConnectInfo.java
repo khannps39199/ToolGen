@@ -12,5 +12,7 @@ public class ConnectInfo{
     private String password;
     private String dbName;
     private String tblName;
+    private String backEndSourceURL;
+    private String frontEndSourceURL;
 
 }

@@ -70,13 +70,34 @@
                   <option th:each="item : ${listtBL}" th:value="${item}" th:text="${item}"></option>
                 </select>
               </div>
-
+               <div class="mb-3">
+                <label for="backendsourceURl" class="form-label">backendsourceURl</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="backendsourceURl"
+                  name="backendsourceURl"
+                  placeholder="Nhập URL source BackEndURL to genarate"
+                  th:field="*{backEndSourceURL}"
+                />
+              </div> <div class="mb-3">
+                <label for="frontEndSourceURL" class="form-label">frontEndSourceURL</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="frontEndSourceURL"
+                  name="frontEndSourceURL"
+                  placeholder=""
+                  th:field="*{frontEndSourceURL}"
+                />
+              </div>
               <div>
                 <button type="submit" class="btn btn-success w-100" th:formaction="@{/customTableComlumnToGenerate}">
                   Select
                 </button>
               </div>
             </form>
+            <a th:href="@{/Generate}"></a>
           </div>
         </div>
       </div>
