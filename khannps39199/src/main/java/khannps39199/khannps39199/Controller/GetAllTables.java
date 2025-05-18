@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 
 import khannps39199.khannps39199.Model.ColumnInfo;
+import khannps39199.khannps39199.Model.ForeignKeyInfo;
 
 @Service
 
@@ -24,8 +25,8 @@ public class GetAllTables {
     @Autowired
     SQLServerDataSource ds;
 
-    public List<ColumnInfo> getTableColumns( String tableName) throws SQLException {
-        
+    public List<ColumnInfo> getTableColumns(String tableName) throws SQLException {
+
         List<ColumnInfo> columns = new ArrayList<>();
         try (Connection conn = ds.getConnection()) {
             DatabaseMetaData metaData = conn.getMetaData();
@@ -37,6 +38,60 @@ public class GetAllTables {
             }
         }
         return columns;
+    }
+
+
+
+    // public List<ForeignKeyInfo> getForeignKeys(String tableName) throws SQLException {
+    //     List<ForeignKeyInfo> foreignKeys = new ArrayList<>();
+    //     try (Connection conn = ds.getConnection()) {
+    //         DatabaseMetaData metaData = conn.getMetaData();
+    //         ResultSet rs = metaData.getImportedKeys(conn.getCatalog(), null, tableName);
+    //         while (rs.next()) {
+    //             String fkColumnName = rs.getString("FKCOLUMN_NAME"); // cột trong bảng hiện tại
+    //             String pkTableName = rs.getString("PKTABLE_NAME"); // bảng được tham chiếu
+    //             String pkColumnName = rs.getString("PKCOLUMN_NAME"); // cột khóa chính của bảng được tham chiếu
+
+    //             foreignKeys.add(new ForeignKeyInfo(fkColumnName, pkTableName, pkColumnName));
+    //         }
+    //     } catch (SQLException e) {
+    //         e.printStackTrace();
+    //     }
+    //     return foreignKeys;
+    // }
+    public List<ForeignKeyInfo> getImportForeignKeys(String tableName) throws SQLException {
+        List<ForeignKeyInfo> exportedForeignKeys = new ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            DatabaseMetaData metaData = conn.getMetaData();
+            ResultSet rs = metaData.getExportedKeys(conn.getCatalog(), null, tableName);
+            while (rs.next()) {
+                String fkColumnName = rs.getString("FKCOLUMN_NAME"); // cột trong bảng hiện tại
+                String pkTableName = rs.getString("PKTABLE_NAME"); // bảng được tham chiếu
+                String pkColumnName = rs.getString("PKCOLUMN_NAME"); // cột khóa chính của bảng được tham chiếu
+
+                exportedForeignKeys.add(new ForeignKeyInfo(fkColumnName, pkTableName, pkColumnName));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return exportedForeignKeys;
+    }
+    public List<ForeignKeyInfo> getExportForeignKeys(String tableName) throws SQLException {
+        List<ForeignKeyInfo> importedForeignKeys = new ArrayList<>();
+        try (Connection conn = ds.getConnection()) {
+            DatabaseMetaData metaData = conn.getMetaData();
+            ResultSet rs = metaData.getImportedKeys(conn.getCatalog(), null, tableName);
+            while (rs.next()) {
+                String fkColumnName = rs.getString("FKCOLUMN_NAME"); // cột trong bảng hiện tại
+                String pkTableName = rs.getString("PKTABLE_NAME"); // bảng được tham chiếu
+                String pkColumnName = rs.getString("PKCOLUMN_NAME"); // cột khóa chính của bảng được tham chiếu
+
+                importedForeignKeys.add(new ForeignKeyInfo(fkColumnName, pkTableName, pkColumnName));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return importedForeignKeys;
     }
 
     public List<String> getAllTableNames() {

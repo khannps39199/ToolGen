@@ -1,0 +1,10 @@
+package {{packageName}}.Repository;
+
+import {{packageName}}.Entity.{{className}};
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface {{className}}Repository extends JpaRepository<{{className}}, {{idType}}> {
+    // Add custom query methods here if needed
+}

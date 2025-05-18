@@ -1,12 +1,9 @@
 package khannps39199.khannps39199.Controller;
 
-import java.io.*;
+import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,16 +12,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import com.github.mustachejava.DefaultMustacheFactory;
-import com.github.mustachejava.Mustache;
-import com.github.mustachejava.MustacheFactory;
-
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 
 import jakarta.servlet.http.HttpServletRequest;
 import khannps39199.khannps39199.Model.ColumnInfo;
 import khannps39199.khannps39199.Model.ConnectInfo;
 import khannps39199.khannps39199.Model.ConnectInfoHolder;
+import khannps39199.khannps39199.Model.ForeignKeyInfo;
 
 @Controller
 public class ToolAutoGenSiteController {
@@ -63,7 +57,7 @@ public class ToolAutoGenSiteController {
 
         connectInfoHolder.setConnectInfo(
                 new ConnectInfo(connectInfo.getUserName(), connectInfo.getPassword(), connectInfo.getDbName(), "", "",
-                        ""));
+                        "",new ForeignKeyInfo()));
         ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
         List<String> listDB = getAllTables.getAllDatabases();
 
@@ -128,49 +122,24 @@ public class ToolAutoGenSiteController {
         if (conInfo == null || conInfo.getTblName() == null) {
             return "redirect:/Home";
         }
+        //set Table Name want to Generate
         conInfo.setTblName(connectInfo.getTblName());
         conInfo.setBackEndSourceURL(connectInfo.getBackEndSourceURL());
         conInfo.setFrontEndSourceURL(connectInfo.getFrontEndSourceURL());
         connectInfoHolder.setConnectInfo(conInfo);
+        //Re-connect
         conInfo = connectInfoHolder.getConnectInfo();
+        //Get Value to generate
         List<ColumnInfo> listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
+        List<String> packageNameSplit = Arrays.asList(connectInfo.getBackEndSourceURL().split("\\\\"));
+        HandleGenerate handelGen=new HandleGenerate();
+        //Gennerate Entity
+        handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+        handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+
+        
         List<String> listDB = getAllTables.getAllDatabases();
         List<String> listtBL = getAllTables.getAllTableNames();
-        List<String> packageNameSplit = Arrays.asList(connectInfo.getBackEndSourceURL().split("\\\\"));
-        Map<String, Object> context = new HashMap<>();
-        context.put("className", connectInfo.getTblName());
-        context.put("tableName", connectInfo.getTblName());
-        context.put("packageName",packageNameSplit.get(packageNameSplit.size()-1)+"."+packageNameSplit.get(packageNameSplit.size()-2)+".Entity");
-
-        List<Map<String, String>> fields = new ArrayList<>();
-
-        listtBLColumn.forEach(e -> {
-            Map<String, String> itemFeilds = new HashMap<>();
-            String sqlType = e.getSqlType().toUpperCase();
-            String javaType = switch (sqlType) {
-                case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
-                case "INT", "INTEGER" -> "int";
-                case "BIGINT" -> "long";
-                case "BIT" -> "boolean";
-                case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
-                default -> "String"; // fallback
-            };
-            itemFeilds.put("javaType", javaType);
-            itemFeilds.put("columnName", e.getName());
-            itemFeilds.put("fieldName", e.getName()); // Tên cột
-            fields.add(itemFeilds);
-        });
-        context.put("fields", fields);
-        new File(conInfo.getBackEndSourceURL()).mkdirs(); // Tạo thư mục nếu chưa có
-        MustacheFactory mf = new DefaultMustacheFactory();
-        Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
-
-        try (Writer writer = new FileWriter(
-                conInfo.getBackEndSourceURL() + "/Entity" + "/" + conInfo.getTblName() + ".java")) {
-            System.out.println(context.get("fields"));
-            mustache.execute(writer, context);
-        }
-
         model.addAttribute("listDB", listDB);
         model.addAttribute("connectInfo", conInfo);
         model.addAttribute("listtBL", listtBL);
@@ -178,22 +147,4 @@ public class ToolAutoGenSiteController {
         // return "ExtendLayout";
         return "redirect:/getAllTableFormSelectedDB";
     }
-
-    // @GetMapping("/Generate")
-    // public String Generate(Model model, @ModelAttribute ConnectInfo connectInfo)
-    // throws SQLException {
-    // ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
-    // if (conInfo == null || conInfo.getTblName() == null) {
-    // return "redirect:/Home";
-    // }
-    // List<ColumnInfo> listtBLColumn =
-    // getAllTables.getTableColumns(connectInfo.getTblName());
-    // List<String> listDB = getAllTables.getAllDatabases();
-    // List<String> listtBL = getAllTables.getAllTableNames();
-    // model.addAttribute("listDB", listDB);
-    // model.addAttribute("connectInfo", conInfo);
-    // model.addAttribute("listtBL", listtBL);
-    // model.addAttribute("Component", "SelectTableComponent");
-    // return "ExtendLayout";
-    // }
 }

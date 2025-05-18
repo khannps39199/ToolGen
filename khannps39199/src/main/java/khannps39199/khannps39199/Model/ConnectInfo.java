@@ -14,5 +14,5 @@ public class ConnectInfo{
     private String tblName;
     private String backEndSourceURL;
     private String frontEndSourceURL;
-
+    private ForeignKeyInfo foreignKeyInfo;
 }
