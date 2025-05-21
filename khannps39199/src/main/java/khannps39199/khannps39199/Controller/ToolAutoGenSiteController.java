@@ -100,7 +100,7 @@ public class ToolAutoGenSiteController {
 
         ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
         if (conInfo == null || conInfo.getTblName() == null) {
-            return "redirect:/Home";
+            return "redirect:/getAllTableFormSelectedDB";
         }
 
         List<String> listDB = getAllTables.getAllDatabases();
@@ -119,7 +119,6 @@ public class ToolAutoGenSiteController {
         if (conInfo == null || conInfo.getTblName() == null) {
             return "redirect:/Home";
         }
-        System.out.println(connectInfo.getTblName());
         // set Table Name want to Generate
         conInfo.setTblName(connectInfo.getTblName());
         conInfo.setBackEndSourceURL(connectInfo.getBackEndSourceURL());
@@ -129,10 +128,17 @@ public class ToolAutoGenSiteController {
         conInfo = connectInfoHolder.getConnectInfo();
         // Get Value to generate
         List<ColumnInfo> listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
+        //extract pakageName
         List<String> packageNameSplit = Arrays.asList(connectInfo.getBackEndSourceURL().split("\\\\"));
+        //Define
         HandleGenerate handelGen = new HandleGenerate();
         // Gennerate Entity
-        List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(connectInfo.getTblName());
+        List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds,connectInfo.getTblName());
+        List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds,connectInfo.getTblName());
+                        System.out.println("Export keys");      
+        ExportedKeysInfos.forEach(e->{
+            System.out.println(e.getPkColumn()+" "+e.getFkColumn()+" "+e.getPkTable());
+        });
         if (!connectInfo.getTblName().equals( "All") ) {
             handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos);
             handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
@@ -155,8 +161,6 @@ public class ToolAutoGenSiteController {
         model.addAttribute("listDB", listDB);
         model.addAttribute("connectInfo", conInfo);
         model.addAttribute("listtBL", listtBL);
-        // model.addAttribute("Component", "SelectTableComponent");
-        // return "ExtendLayout";
         return "redirect:/getAllTableFormSelectedDB";
     }
 }

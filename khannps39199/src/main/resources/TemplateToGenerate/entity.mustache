@@ -20,7 +20,16 @@ public class {{className}} {
     private {{javaType}} {{fieldName}};
 {{/fields}}
    
+{{#foreignKeys}}
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "{{fkColumnName}}")
+    private {{pkClassName}} {{camelFieldName}};
+{{/foreignKeys}}
 
+{{#exportKeys}}
+    @OneToMany(mappedBy = "{{fkColumnName}}", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<{{pkClassName}}> {{camelFieldName}};
+{{/exportKeys}}
 
 
 

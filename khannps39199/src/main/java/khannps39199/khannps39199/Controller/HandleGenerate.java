@@ -24,18 +24,18 @@ import khannps39199.khannps39199.Model.ForeignKeyInfo;
 public class HandleGenerate {
         public void HandleGenerateEntity(ConnectInfo connectInfo, List<String> packageNameSplit,
                         List<ColumnInfo> listtBLColumn, ConnectInfo conInfo,
-                        List<ForeignKeyInfo> importeddKeysInfosList)
+                        List<ForeignKeyInfo> importedKeysInfosList)
                         throws SQLException, IOException {
                 Map<String, Object> context = new HashMap<>();
                 String firstUpcaseClassName = Character.toUpperCase(connectInfo.getTblName().charAt(0))
                                 + connectInfo.getTblName().substring(1);
-
                 context.put("className", firstUpcaseClassName);
                 context.put("tableName", connectInfo.getTblName());
                 context.put("packageName", packageNameSplit.get(packageNameSplit.size() - 3) + "."
                                 + packageNameSplit.get(packageNameSplit.size() - 2) + "."
                                 + packageNameSplit.get(packageNameSplit.size() - 1));
                 List<Map<String, String>> fields = new ArrayList<>();
+                List<Map<String, String>> foreignKeys = new ArrayList<>();
                 for (ColumnInfo e : listtBLColumn) {
                         Map<String, String> itemFeilds = new HashMap<>();
                         String sqlType = e.getSqlType().toUpperCase();
@@ -48,14 +48,28 @@ public class HandleGenerate {
                                 case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
                                 default -> "String"; // fallback
                         };
-
+                        boolean isExistsKey = importedKeysInfosList.stream()
+                                        .anyMatch(keys -> keys.getFkColumn().equals(e.getName()));
+                        if (isExistsKey) {
+                                continue;
+                        }
                         itemFeilds.put("javaType", javaType);
                         itemFeilds.put("columnName", e.getName());
                         itemFeilds.put("fieldName", e.getName()); // Tên cột
                         fields.add(itemFeilds);
                 }
+                for (ForeignKeyInfo e : importedKeysInfosList) {
+                        Map<String, String> itemForeignKeys = new HashMap<>();
+                        String firstUpcaseClassNameImportKey = Character.toUpperCase(e.getPkTable().charAt(0))
+                                        + e.getPkTable().substring(1);
+                        itemForeignKeys.put("fkColumnName", e.getFkColumn());
+                        itemForeignKeys.put("pkClassName", firstUpcaseClassNameImportKey);
+                        itemForeignKeys.put("camelFieldName", e.getPkTable()); // Tên cột
+                        foreignKeys.add(itemForeignKeys);
+                }
 
                 context.put("fields", fields);
+                context.put("foreignKeys", foreignKeys);
                 new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
                 MustacheFactory mf = new DefaultMustacheFactory();
                 Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
@@ -101,7 +115,7 @@ public class HandleGenerate {
                 }
 
         }
-        
+
         public int HandleDefineRepositoryToService(ConnectInfo connectInfo, List<String> packageNameSplit,
                         List<ColumnInfo> listtBLColumn, ConnectInfo conInfo) throws SQLException, IOException {
                 boolean isUpdate = false;
@@ -113,7 +127,7 @@ public class HandleGenerate {
                 String lowerClassName = Character.toLowerCase(connectInfo.getTblName().charAt(0))
                                 + connectInfo.getTblName().substring(1);
                 // check xem đã khai báo vào service chưa
-                
+
                 // Vị trí chèn trước dấu "}" cuối cùng
                 int insertPos = content.lastIndexOf('}');
                 String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
@@ -151,11 +165,11 @@ public class HandleGenerate {
                                 "        " + lowerClassName + "Repository.deleteById(id);\n" +
                                 "    }\n";
                 ;
-                isUpdate=content.contains("\n@Autowired\n" +
+                isUpdate = content.contains("\n@Autowired\n" +
                                 "    private " + firstUpcaseClassName + "Repository " + lowerClassName
                                 + "Repository;\n\n");
-                        System.out.println("isContains"+"");
-                if (isUpdate==true) {
+                System.out.println("isContains" + "");
+                if (isUpdate == true) {
                         System.out.println("isContains");
                 } else {
                         // Ghi lại file
