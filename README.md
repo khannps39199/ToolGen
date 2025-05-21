@@ -8,6 +8,6 @@ Chọn database muốn reconnect để lấy các bảng generate
 chọn Generate All Entity hằng có thể chọn các bảng tùy chọn 
 nhập URL path muốn generate
 nhấn select
-
+Luu ý nhấn select Another DB mỗi lần chỉnh bảng do Connection được làm mới mỗi request
 
 
