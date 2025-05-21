@@ -66,7 +66,7 @@
                   id="tableSelect"
                   th:field="*{tblName}"
                 >
-                  <option disabled selected value="">-- Select Table --</option>
+                  <option selected th:value="All">genarate All Entity</option>
                   <option th:each="item : ${listtBL}" th:value="${item}" th:text="${item}"></option>
                 </select>
               </div>
@@ -91,13 +91,13 @@
                   th:field="*{frontEndSourceURL}"
                 />
               </div>
+
               <div>
                 <button type="submit" class="btn btn-success w-100" th:formaction="@{/customTableComlumnToGenerate}">
                   Select
                 </button>
               </div>
             </form>
-            <a th:href="@{/Generate}"></a>
           </div>
         </div>
       </div>

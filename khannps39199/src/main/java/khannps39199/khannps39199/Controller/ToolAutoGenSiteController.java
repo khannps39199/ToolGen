@@ -57,7 +57,7 @@ public class ToolAutoGenSiteController {
 
         connectInfoHolder.setConnectInfo(
                 new ConnectInfo(connectInfo.getUserName(), connectInfo.getPassword(), connectInfo.getDbName(), "", "",
-                        "",new ForeignKeyInfo()));
+                        "", new ForeignKeyInfo()));
         ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
         List<String> listDB = getAllTables.getAllDatabases();
 
@@ -86,9 +86,6 @@ public class ToolAutoGenSiteController {
     public String getAllTableFormSelectedDBLayout(Model model) {
 
         ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
-        if (conInfo == null || conInfo.getTblName() == null) {
-            return "redirect:/Home";
-        }
         List<String> listDB = getAllTables.getAllDatabases();
         List<String> listtBL = getAllTables.getAllTableNames();
         model.addAttribute("listDB", listDB);
@@ -122,22 +119,37 @@ public class ToolAutoGenSiteController {
         if (conInfo == null || conInfo.getTblName() == null) {
             return "redirect:/Home";
         }
-        //set Table Name want to Generate
+        System.out.println(connectInfo.getTblName());
+        // set Table Name want to Generate
         conInfo.setTblName(connectInfo.getTblName());
         conInfo.setBackEndSourceURL(connectInfo.getBackEndSourceURL());
         conInfo.setFrontEndSourceURL(connectInfo.getFrontEndSourceURL());
         connectInfoHolder.setConnectInfo(conInfo);
-        //Re-connect
+        // Re-connect
         conInfo = connectInfoHolder.getConnectInfo();
-        //Get Value to generate
+        // Get Value to generate
         List<ColumnInfo> listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
         List<String> packageNameSplit = Arrays.asList(connectInfo.getBackEndSourceURL().split("\\\\"));
-        HandleGenerate handelGen=new HandleGenerate();
-        //Gennerate Entity
-        handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo);
-        handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+        HandleGenerate handelGen = new HandleGenerate();
+        // Gennerate Entity
+        List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(connectInfo.getTblName());
+        if (!connectInfo.getTblName().equals( "All") ) {
+            handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos);
+            handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+            handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+        } else {
 
-        
+            List<String> listtBL = getAllTables.getAllTableNames();
+            for (String tableItem : listtBL) {
+                connectInfo.setTblName(tableItem);
+                listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
+                handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo,
+                        ImportedKeysInfos);
+                handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+                handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+            }
+        }
+
         List<String> listDB = getAllTables.getAllDatabases();
         List<String> listtBL = getAllTables.getAllTableNames();
         model.addAttribute("listDB", listDB);

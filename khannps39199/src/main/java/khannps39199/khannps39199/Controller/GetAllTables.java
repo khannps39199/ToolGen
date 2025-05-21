@@ -59,7 +59,7 @@ public class GetAllTables {
     //     }
     //     return foreignKeys;
     // }
-    public List<ForeignKeyInfo> getImportForeignKeys(String tableName) throws SQLException {
+    public List<ForeignKeyInfo> getExportedForeignKeys(String tableName) throws SQLException {
         List<ForeignKeyInfo> exportedForeignKeys = new ArrayList<>();
         try (Connection conn = ds.getConnection()) {
             DatabaseMetaData metaData = conn.getMetaData();
@@ -76,7 +76,7 @@ public class GetAllTables {
         }
         return exportedForeignKeys;
     }
-    public List<ForeignKeyInfo> getExportForeignKeys(String tableName) throws SQLException {
+    public List<ForeignKeyInfo> getImportedForeignKeys(String tableName) throws SQLException {
         List<ForeignKeyInfo> importedForeignKeys = new ArrayList<>();
         try (Connection conn = ds.getConnection()) {
             DatabaseMetaData metaData = conn.getMetaData();
