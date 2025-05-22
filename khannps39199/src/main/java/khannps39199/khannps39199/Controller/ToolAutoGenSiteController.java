@@ -56,7 +56,7 @@ public class ToolAutoGenSiteController {
 		// ds.setTrustServerCertificate(false);
 
 		connectInfoHolder.setConnectInfo(new ConnectInfo(connectInfo.getUserName(), connectInfo.getPassword(),
-				connectInfo.getDbName(), "", "", "", new ForeignKeyInfo()));
+				connectInfo.getDbName(), "", connectInfo.getBackEndSourceURL()!=null?connectInfo.getBackEndSourceURL():"", "", new ForeignKeyInfo()));
 		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
 		List<String> listDB = getAllTables.getAllDatabases();
 
@@ -66,20 +66,7 @@ public class ToolAutoGenSiteController {
 		return "redirect:/getAllTableFormSelectedDB";
 	}
 
-	// @PostMapping("/getAllTableFormSelectedDB")
-	// public String getAllTableFormSelectedDB(Model model) {
-	// ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
-	// String tblName = req.getParameter("tableSelect");
-	// conInfo.setTblName(tblName);
-	// connectInfoHolder.setConnectInfo(conInfo);
-	// conInfo = connectInfoHolder.getConnectInfo();
-	// List<String> listtBL = getAllTables.getAllTableNames();
-	// List<String> listDB = getAllTables.getAllDatabases();
-	// model.addAttribute("connectInfo", conInfo);
-	// model.addAttribute("listDB", listDB);
-	// model.addAttribute("listtBL", listtBL);
-	// return "index";
-	// }
+	
 
 	@GetMapping("/getAllTableFormSelectedDB")
 	public String getAllTableFormSelectedDBLayout(Model model) {
@@ -132,10 +119,11 @@ public class ToolAutoGenSiteController {
 		// Define
 		HandleGenerate handelGen = new HandleGenerate();
 		// Generate Entity
-		List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, connectInfo.getTblName());
-		List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, connectInfo.getTblName());
+		
 
 		if (!connectInfo.getTblName().equals("All")) {
+			List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, connectInfo.getTblName());
+			List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, connectInfo.getTblName());
 			handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 					ExportedKeysInfos);
 			handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
@@ -144,6 +132,8 @@ public class ToolAutoGenSiteController {
 
 			List<String> listtBL = getAllTables.getAllTableNames();
 			for (String tableItem : listtBL) {
+				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, tableItem);
+				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, tableItem);
 				connectInfo.setTblName(tableItem);
 				listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
 				handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,

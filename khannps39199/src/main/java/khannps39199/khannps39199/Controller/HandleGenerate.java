@@ -57,31 +57,50 @@ public class HandleGenerate {
 			if (isExistsKey) {
 				continue;
 			}
+			String variableFeildName = commonFunction.firstLowCase(commonFunction.ConvertToClassName(e.getName()));
 			itemFeilds.put("javaType", javaType);
 			itemFeilds.put("columnName", e.getName());
-			itemFeilds.put("fieldName", e.getName()); // Tên cột
+			itemFeilds.put("fieldName", variableFeildName); // Tên cột
 			fields.add(itemFeilds);
 		}
 		for (ForeignKeyInfo e : importedKeysInfosList) {
+			System.out.println(e.getFkColumn() + " " + e.getPkColumn() + " " + e.getPkTable() + "\n");
+
 			Map<String, String> itemForeignKeys = new HashMap<>();
-			String firstUpcaseClassNameImportKey = Character.toUpperCase(e.getPkTable().charAt(0))
-					+ e.getPkTable().substring(1);
+			String firstUpcaseClassNameImportKey = commonFunction.ConvertToClassName(e.getPkTable());
+			String variableCamelFieldName = commonFunction.ConvertToVariableName(e.getPkTable());
+
 			itemForeignKeys.put("fkColumnName", e.getFkColumn());
 			itemForeignKeys.put("pkClassName", firstUpcaseClassNameImportKey);
-			itemForeignKeys.put("camelFieldName", e.getPkTable()); // Tên cột
+			itemForeignKeys.put("camelFieldName", variableCamelFieldName); // Tên cột
 			foreignKeys.add(itemForeignKeys);
 		}
-		for (ForeignKeyInfo e : exportedKeysInfosList) {
-			Map<String, String> itemForeignKeys = new HashMap<>();
-			String firstUpcaseClassNameExportKey = commonFunction.ConvertToClassName(e.getPkTable());
-			String firstUpcasePkExportKeyColumn = commonFunction.ConvertToClassName(e.getPkTable());
-			String firstUpcaseFkExportKeyColumn = commonFunction.ConvertToClassName(e.getPkTable());
-			itemForeignKeys.put("fkColumnNameExported", firstUpcaseFkExportKeyColumn);
-			itemForeignKeys.put("pkClassNameExported", firstUpcasePkExportKeyColumn);
-			itemForeignKeys.put("camelFieldNameExported", firstUpcaseClassNameExportKey); // Tên cột
-			exportKeys.add(itemForeignKeys);
-		}
-
+//		for (ForeignKeyInfo e : exportedKeysInfosList) {
+//			System.out.println(e.getFkColumn()+" "+ e.getPkColumn()+" "+ e.getPkTable()+"\n");
+//			Map<String, String> itemForeignKeys = new HashMap<>();
+//			String firstUpcaseClassNameExportKey = commonFunction.ConvertToVariableName(e.getPkTable());
+//			String firstUpcasePkExportKeyColumn = commonFunction.ConvertToClassName(e.getPkTable());
+//			String firstUpcaseFkExportKeyColumn = commonFunction.ConvertToClassName(e.getFkColumn());
+//			itemForeignKeys.put("fkColumnNameExported", e.getFkColumn());
+//			itemForeignKeys.put("pkClassNameExported", firstUpcasePkExportKeyColumn);
+//			itemForeignKeys.put("camelFieldNameExported", firstUpcaseClassNameExportKey); // Tên cột
+//			exportKeys.add(itemForeignKeys);
+//			{{#exportKeys}}
+//		    @OneToMany(mappedBy = "{{fkColumnNameExported}}", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//		    private List<{{pkClassNameExported}}> {{camelFieldNameExported}};
+//		{{/exportKeys}}
+//		}
+		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
+		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+		case "INT", "INT IDENTITY", "INTEGER" -> "int";
+		case "BIGINT" -> "long";
+		case "BIT" -> "boolean";
+		case "DECIMAL" -> "Double";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+		default -> "String"; // fallback
+		};
+		context.put("className", firstUpcaseClassName);
+		context.put("isInteger", idType.equals("int") ? "@GeneratedValue(strategy = GenerationType.IDENTITY)" : "");
 		context.put("fields", fields);
 		context.put("foreignKeys", foreignKeys);
 		context.put("exportKeys", exportKeys);
@@ -133,13 +152,14 @@ public class HandleGenerate {
 	public int HandleDefineRepositoryToService(ConnectInfo connectInfo, List<String> packageNameSplit,
 			List<ColumnInfo> listtBLColumn, ConnectInfo conInfo) throws SQLException, IOException {
 		boolean isUpdate = false;
+
 		String firstUpcaseClassName = commonFunction.ConvertToClassName(connectInfo.getTblName());
 		String lowerClassName = commonFunction.ConvertToVariableName(connectInfo.getTblName());
 		Map<String, Object> context = new HashMap<>();
 
 		context.put("className", firstUpcaseClassName);
 		context.put("variableClassName", lowerClassName);
-		
+
 		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
 		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
 		case "INT", "INT IDENTITY", "INTEGER" -> "int";
