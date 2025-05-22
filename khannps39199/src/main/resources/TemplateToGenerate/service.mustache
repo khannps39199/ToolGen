@@ -1,0 +1,27 @@
+package com.aos.AOSBE.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.aos.AOSBE.Entity.*;
+import com.aos.AOSBE.Repository.*;
+import java.util.*;
+public class {{className}}Service {
+	@Autowired
+    private {{className}}Repository {{variableClassName}}Repository;
+
+    public List<{{className}}> {{variableClassName}}FindAll() {
+        return {{variableClassName}}Repository.findAll();
+    }
+    public {{className}} {{variableClassName}}Save({{className}} {{variableClassName}}) {
+        return {{variableClassName}}Repository.save({{variableClassName}});
+    }
+    public Optional<{{className}}> {{variableClassName}}FindById({{idType}} id) {
+        return {{variableClassName}}Repository.findById(id);
+    }
+    public void {{variableClassName}}DeleteById({{idType}} id) {
+        {{variableClassName}}Repository.deleteById(id);
+    }
+}

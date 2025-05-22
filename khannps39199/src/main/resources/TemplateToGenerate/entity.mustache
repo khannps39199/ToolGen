@@ -27,8 +27,8 @@ public class {{className}} {
 {{/foreignKeys}}
 
 {{#exportKeys}}
-    @OneToMany(mappedBy = "{{fkColumnName}}", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<{{pkClassName}}> {{camelFieldName}};
+    @OneToMany(mappedBy = "{{fkColumnNameExported}}", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<{{pkClassNameExported}}> {{camelFieldNameExported}};
 {{/exportKeys}}
 
 

@@ -18,167 +18,184 @@ import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
 
 import khannps39199.khannps39199.Model.ColumnInfo;
+import khannps39199.khannps39199.Model.CommonFunction;
 import khannps39199.khannps39199.Model.ConnectInfo;
 import khannps39199.khannps39199.Model.ForeignKeyInfo;
 
 public class HandleGenerate {
-        public void HandleGenerateEntity(ConnectInfo connectInfo, List<String> packageNameSplit,
-                        List<ColumnInfo> listtBLColumn, ConnectInfo conInfo,
-                        List<ForeignKeyInfo> importedKeysInfosList)
-                        throws SQLException, IOException {
-                Map<String, Object> context = new HashMap<>();
-                String firstUpcaseClassName = Character.toUpperCase(connectInfo.getTblName().charAt(0))
-                                + connectInfo.getTblName().substring(1);
-                context.put("className", firstUpcaseClassName);
-                context.put("tableName", connectInfo.getTblName());
-                context.put("packageName", packageNameSplit.get(packageNameSplit.size() - 3) + "."
-                                + packageNameSplit.get(packageNameSplit.size() - 2) + "."
-                                + packageNameSplit.get(packageNameSplit.size() - 1));
-                List<Map<String, String>> fields = new ArrayList<>();
-                List<Map<String, String>> foreignKeys = new ArrayList<>();
-                for (ColumnInfo e : listtBLColumn) {
-                        Map<String, String> itemFeilds = new HashMap<>();
-                        String sqlType = e.getSqlType().toUpperCase();
-                        String javaType = switch (sqlType) {
-                                case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
-                                case "INT", "INT IDENTITY", "INTEGER" -> "int";
-                                case "BIGINT" -> "long";
-                                case "BIT" -> "boolean";
-                                case "DECIMAL" -> "double";
-                                case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
-                                default -> "String"; // fallback
-                        };
-                        boolean isExistsKey = importedKeysInfosList.stream()
-                                        .anyMatch(keys -> keys.getFkColumn().equals(e.getName()));
-                        if (isExistsKey) {
-                                continue;
-                        }
-                        itemFeilds.put("javaType", javaType);
-                        itemFeilds.put("columnName", e.getName());
-                        itemFeilds.put("fieldName", e.getName()); // Tên cột
-                        fields.add(itemFeilds);
-                }
-                for (ForeignKeyInfo e : importedKeysInfosList) {
-                        Map<String, String> itemForeignKeys = new HashMap<>();
-                        String firstUpcaseClassNameImportKey = Character.toUpperCase(e.getPkTable().charAt(0))
-                                        + e.getPkTable().substring(1);
-                        itemForeignKeys.put("fkColumnName", e.getFkColumn());
-                        itemForeignKeys.put("pkClassName", firstUpcaseClassNameImportKey);
-                        itemForeignKeys.put("camelFieldName", e.getPkTable()); // Tên cột
-                        foreignKeys.add(itemForeignKeys);
-                }
 
-                context.put("fields", fields);
-                context.put("foreignKeys", foreignKeys);
-                new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
-                MustacheFactory mf = new DefaultMustacheFactory();
-                Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
-                try (Writer writer = new FileWriter(
-                                conInfo.getBackEndSourceURL() + "/Entity" + "/" + firstUpcaseClassName + ".java")) {
+	CommonFunction commonFunction = new CommonFunction();
 
-                        mustache.execute(writer, context);
-                }
+	public void HandleGenerateEntity(ConnectInfo connectInfo, List<String> packageNameSplit,
+			List<ColumnInfo> listtBLColumn, ConnectInfo conInfo, List<ForeignKeyInfo> importedKeysInfosList,
+			List<ForeignKeyInfo> exportedKeysInfosList) throws SQLException, IOException {
+		Map<String, Object> context = new HashMap<>();
+		String firstUpcaseClassName = commonFunction.ConvertToClassName(connectInfo.getTblName());
+		context.put("className", firstUpcaseClassName);
+		context.put("tableName", connectInfo.getTblName());
+		context.put("packageName",
+				packageNameSplit.get(packageNameSplit.size() - 3) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 1));
+		List<Map<String, String>> fields = new ArrayList<>();
+		List<Map<String, String>> foreignKeys = new ArrayList<>();
+		List<Map<String, String>> exportKeys = new ArrayList<>();
+		for (ColumnInfo e : listtBLColumn) {
+			Map<String, String> itemFeilds = new HashMap<>();
+			String sqlType = e.getSqlType().toUpperCase();
+			String javaType = switch (sqlType) {
+			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+			case "INT", "INT IDENTITY", "INTEGER" -> "int";
+			case "BIGINT" -> "long";
+			case "BIT" -> "boolean";
+			case "DECIMAL" -> "double";
+			case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+			default -> "String"; // fallback
+			};
+			boolean isExistsKey = importedKeysInfosList.stream()
+					.anyMatch(keys -> keys.getFkColumn().equals(e.getName()));
+			if (isExistsKey) {
+				continue;
+			}
+			itemFeilds.put("javaType", javaType);
+			itemFeilds.put("columnName", e.getName());
+			itemFeilds.put("fieldName", e.getName()); // Tên cột
+			fields.add(itemFeilds);
+		}
+		for (ForeignKeyInfo e : importedKeysInfosList) {
+			Map<String, String> itemForeignKeys = new HashMap<>();
+			String firstUpcaseClassNameImportKey = Character.toUpperCase(e.getPkTable().charAt(0))
+					+ e.getPkTable().substring(1);
+			itemForeignKeys.put("fkColumnName", e.getFkColumn());
+			itemForeignKeys.put("pkClassName", firstUpcaseClassNameImportKey);
+			itemForeignKeys.put("camelFieldName", e.getPkTable()); // Tên cột
+			foreignKeys.add(itemForeignKeys);
+		}
+		for (ForeignKeyInfo e : exportedKeysInfosList) {
+			Map<String, String> itemForeignKeys = new HashMap<>();
+			String firstUpcaseClassNameExportKey = commonFunction.ConvertToClassName(e.getPkTable());
+			String firstUpcasePkExportKeyColumn = commonFunction.ConvertToClassName(e.getPkTable());
+			String firstUpcaseFkExportKeyColumn = commonFunction.ConvertToClassName(e.getPkTable());
+			itemForeignKeys.put("fkColumnNameExported", firstUpcaseFkExportKeyColumn);
+			itemForeignKeys.put("pkClassNameExported", firstUpcasePkExportKeyColumn);
+			itemForeignKeys.put("camelFieldNameExported", firstUpcaseClassNameExportKey); // Tên cột
+			exportKeys.add(itemForeignKeys);
+		}
 
-        }
+		context.put("fields", fields);
+		context.put("foreignKeys", foreignKeys);
+		context.put("exportKeys", exportKeys);
+		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
+		MustacheFactory mf = new DefaultMustacheFactory();
+		Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
+		try (Writer writer = new FileWriter(
+				conInfo.getBackEndSourceURL() + "/Entity" + "/" + firstUpcaseClassName + ".java")) {
 
-        public void HandleGenerateRepository(ConnectInfo connectInfo, List<String> packageNameSplit,
-                        List<ColumnInfo> listtBLColumn, ConnectInfo conInfo) throws SQLException, IOException {
-                Map<String, Object> context = new HashMap<>();
+			mustache.execute(writer, context);
+		}
 
-                String firstUpcaseClassName = Character.toUpperCase(connectInfo.getTblName().charAt(0))
-                                + connectInfo.getTblName().substring(1);
-                context.put("className", firstUpcaseClassName);
-                context.put("packageName", packageNameSplit.get(packageNameSplit.size() - 3) + "."
-                                + packageNameSplit.get(packageNameSplit.size() - 2) + "."
-                                + packageNameSplit.get(packageNameSplit.size() - 1));
+	}
 
-                String javaType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
-                        case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
-                        case "INT", "INT IDENTITY", "INTEGER" -> "Integer";
-                        case "BIGINT" -> "long";
-                        case "BIT" -> "boolean";
-                        case "DECIMAL" -> "Double";
-                        case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
-                        default -> "String"; // fallback
-                };
-                context.put("idType", javaType);
+	public void HandleGenerateRepository(ConnectInfo connectInfo, List<String> packageNameSplit,
+			List<ColumnInfo> listtBLColumn, ConnectInfo conInfo) throws SQLException, IOException {
+		Map<String, Object> context = new HashMap<>();
 
-                new File(conInfo.getBackEndSourceURL() + "/Repository").mkdirs(); // Tạo thư mục nếu chưa có
-                MustacheFactory mf = new DefaultMustacheFactory();
-                Mustache mustache = mf.compile("TemplateToGenerate/repository.mustache");
+		String firstUpcaseClassName = commonFunction.ConvertToClassName(connectInfo.getTblName());
+		context.put("className", firstUpcaseClassName);
+		context.put("packageName",
+				packageNameSplit.get(packageNameSplit.size() - 3) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 1));
 
-                try (Writer writer = new FileWriter(
-                                conInfo.getBackEndSourceURL() + "/Repository" + "/" + firstUpcaseClassName
-                                                + "Repository.java")) {
+		String javaType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
+		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+		case "INT", "INT IDENTITY", "INTEGER" -> "Integer";
+		case "BIGINT" -> "long";
+		case "BIT" -> "boolean";
+		case "DECIMAL" -> "Double";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+		default -> "String"; // fallback
+		};
+		context.put("idType", javaType);
 
-                        mustache.execute(writer, context);
-                }
+		new File(conInfo.getBackEndSourceURL() + "/Repository").mkdirs(); // Tạo thư mục nếu chưa có
+		MustacheFactory mf = new DefaultMustacheFactory();
+		Mustache mustache = mf.compile("TemplateToGenerate/repository.mustache");
 
-        }
+		try (Writer writer = new FileWriter(
+				conInfo.getBackEndSourceURL() + "/Repository" + "/" + firstUpcaseClassName + "Repository.java")) {
 
-        public int HandleDefineRepositoryToService(ConnectInfo connectInfo, List<String> packageNameSplit,
-                        List<ColumnInfo> listtBLColumn, ConnectInfo conInfo) throws SQLException, IOException {
-                boolean isUpdate = false;
-                Path path = Paths.get(conInfo.getBackEndSourceURL() + "/Service/Service.java");
-                String content = Files.readString(path);
+			mustache.execute(writer, context);
+		}
 
-                String firstUpcaseClassName = Character.toUpperCase(connectInfo.getTblName().charAt(0))
-                                + connectInfo.getTblName().substring(1);
-                String lowerClassName = Character.toLowerCase(connectInfo.getTblName().charAt(0))
-                                + connectInfo.getTblName().substring(1);
-                // check xem đã khai báo vào service chưa
+	}
 
-                // Vị trí chèn trước dấu "}" cuối cùng
-                int insertPos = content.lastIndexOf('}');
-                String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
-                        case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
-                        case "INT", "INT IDENTITY", "INTEGER" -> "int";
-                        case "BIGINT" -> "long";
-                        case "BIT" -> "boolean";
-                        case "DECIMAL" -> "double";
-                        case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
-                        default -> "String"; // fallback
-                };
+	public int HandleDefineRepositoryToService(ConnectInfo connectInfo, List<String> packageNameSplit,
+			List<ColumnInfo> listtBLColumn, ConnectInfo conInfo) throws SQLException, IOException {
+		boolean isUpdate = false;
+		String firstUpcaseClassName = commonFunction.ConvertToClassName(connectInfo.getTblName());
+		String lowerClassName = commonFunction.ConvertToVariableName(connectInfo.getTblName());
+		Map<String, Object> context = new HashMap<>();
 
-                // Đoạn cần thêm
-                String toAppend = "\n@Autowired\n" +
-                                "    private " + firstUpcaseClassName + "Repository " + lowerClassName
-                                + "Repository;\n\n" +
+		context.put("className", firstUpcaseClassName);
+		context.put("variableClassName", lowerClassName);
+		
+		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
+		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+		case "INT", "INT IDENTITY", "INTEGER" -> "int";
+		case "BIGINT" -> "long";
+		case "BIT" -> "boolean";
+		case "DECIMAL" -> "double";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+		default -> "String"; // fallback
+		};
+		context.put("idType", idType);
+		new File(conInfo.getBackEndSourceURL() + "/Service").mkdirs(); // Tạo thư mục nếu chưa có
+		MustacheFactory mf = new DefaultMustacheFactory();
+		Mustache mustache = mf.compile("TemplateToGenerate/service.mustache");
+		try (Writer writer = new FileWriter(
+				conInfo.getBackEndSourceURL() + "/Service" + "/" + firstUpcaseClassName + "Service.java")) {
 
-                                "    public List<" + firstUpcaseClassName + "> " + lowerClassName + "FindAll() {\n" +
-                                "        return " + lowerClassName + "Repository.findAll();\n" +
-                                "    }\n" +
+			mustache.execute(writer, context);
+		}
 
-                                "    public " + firstUpcaseClassName + " " + lowerClassName + "Save("
-                                + firstUpcaseClassName + " " + lowerClassName + ") {\n"
-
-                                +
-                                "        return " + lowerClassName + "Repository.save(" + lowerClassName + ");\n" +
-                                "    }\n" +
-                                "    public Optional<" + firstUpcaseClassName + "> " + lowerClassName
-                                + "FindById("
-                                + idType + " id) {\n" +
-                                "        return " + lowerClassName + "Repository.findById(id);\n" +
-                                "    }\n" +
-
-                                "    public void " + lowerClassName + "DeleteById(" + idType + " id) {\n" +
-                                "        " + lowerClassName + "Repository.deleteById(id);\n" +
-                                "    }\n";
-                ;
-                isUpdate = content.contains("\n@Autowired\n" +
-                                "    private " + firstUpcaseClassName + "Repository " + lowerClassName
-                                + "Repository;\n\n");
-                System.out.println("isContains" + "");
-                if (isUpdate == true) {
-                        System.out.println("isContains");
-                } else {
-                        // Ghi lại file
-                        String updatedContent = content.substring(0, insertPos) + toAppend + "\n"
-                                        + content.substring(insertPos);
-                        Files.writeString(path, updatedContent);
-
-                }
-                return 0;
-        }
+//		Path path = Paths.get(conInfo.getBackEndSourceURL() + "/Service" + "/" + firstUpcaseClassName + ".java");
+//		String content = Files.readString(path);
+//
+//		// check xem đã khai báo vào service chưa
+//
+//		// Vị trí chèn trước dấu "}" cuối cùng
+//		int insertPos = content.lastIndexOf('}');
+//
+//		// Đoạn cần thêm
+//		String toAppend = "\n@Autowired\n" + "    private " + firstUpcaseClassName + "Repository " + lowerClassName
+//				+ "Repository;\n\n" +
+//
+//				"    public List<" + firstUpcaseClassName + "> " + lowerClassName + "FindAll() {\n" + "        return "
+//				+ lowerClassName + "Repository.findAll();\n" + "    }\n" +
+//
+//				"    public " + firstUpcaseClassName + " " + lowerClassName + "Save(" + firstUpcaseClassName + " "
+//				+ lowerClassName + ") {\n"
+//
+//				+ "        return " + lowerClassName + "Repository.save(" + lowerClassName + ");\n" + "    }\n"
+//				+ "    public Optional<" + firstUpcaseClassName + "> " + lowerClassName + "FindById(" + idType
+//				+ " id) {\n" + "        return " + lowerClassName + "Repository.findById(id);\n" + "    }\n" +
+//
+//				"    public void " + lowerClassName + "DeleteById(" + idType + " id) {\n" + "        " + lowerClassName
+//				+ "Repository.deleteById(id);\n" + "    }\n";
+//		;
+//		isUpdate = content.contains("\n@Autowired\n" + "    private " + firstUpcaseClassName + "Repository "
+//				+ lowerClassName + "Repository;\n\n");
+//		System.out.println("isContains" + "");
+//		if (isUpdate == true) {
+//			System.out.println("isContains");
+//		} else {
+//			// Ghi lại file
+//			String updatedContent = content.substring(0, insertPos) + toAppend + "\n" + content.substring(insertPos);
+//			Files.writeString(path, updatedContent);
+//
+//		}
+		return 0;
+	}
 
 }

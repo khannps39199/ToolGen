@@ -22,145 +22,142 @@ import khannps39199.khannps39199.Model.ForeignKeyInfo;
 
 @Controller
 public class ToolAutoGenSiteController {
-    @Autowired
-    HttpServletRequest req;
-    @Autowired
-    SQLServerDataSource ds;
-    @Autowired
-    GetAllTables getAllTables;
-    @Autowired
-    private ConnectInfoHolder connectInfoHolder;
+	@Autowired
+	HttpServletRequest req;
+	@Autowired
+	SQLServerDataSource ds;
+	@Autowired
+	GetAllTables getAllTables;
+	@Autowired
+	private ConnectInfoHolder connectInfoHolder;
 
-    @GetMapping("/Home")
-    public String getMethodName(Model model) {
+	@GetMapping("/Home")
+	public String getMethodName(Model model) {
 
-        model.addAttribute("connectInfo", new ConnectInfo());
-        List<String> listDB = getAllTables.getAllDatabases();
-        model.addAttribute("listDB", listDB);
-        model.addAttribute("Component", "ConnectAndSelectDB");
-        return "ExtendLayout";
-    }
+		model.addAttribute("connectInfo", new ConnectInfo());
+		List<String> listDB = getAllTables.getAllDatabases();
+		model.addAttribute("listDB", listDB);
+		model.addAttribute("Component", "ConnectAndSelectDB");
+		return "ExtendLayout";
+	}
 
-    @PostMapping("/connectSQL")
-    public String getConnect(Model model, @ModelAttribute ConnectInfo connectInfo) {
-        if (connectInfo.getUserName() == null || connectInfo.getPassword() == null || connectInfo.getDbName() == null) {
-            return "redirect:/Home";
-        }
-        ds.setDatabaseName(connectInfo.getDbName());
-        ds.setServerName("localhost");
-        ds.setPortNumber(1433);
-        ds.setUser(connectInfo.getUserName());
-        ds.setPassword(connectInfo.getPassword());
-        ds.setTrustServerCertificate(true);
-        ds.setEncrypt(true);
-        // ds.setTrustServerCertificate(false);
+	@PostMapping("/connectSQL")
+	public String getConnect(Model model, @ModelAttribute ConnectInfo connectInfo) {
+		if (connectInfo.getUserName() == null || connectInfo.getPassword() == null || connectInfo.getDbName() == null) {
+			return "redirect:/Home";
+		}
+		ds.setDatabaseName(connectInfo.getDbName());
+		ds.setServerName("localhost");
+		ds.setPortNumber(1433);
+		ds.setUser(connectInfo.getUserName());
+		ds.setPassword(connectInfo.getPassword());
+		ds.setTrustServerCertificate(true);
+		ds.setEncrypt(true);
+		// ds.setTrustServerCertificate(false);
 
-        connectInfoHolder.setConnectInfo(
-                new ConnectInfo(connectInfo.getUserName(), connectInfo.getPassword(), connectInfo.getDbName(), "", "",
-                        "", new ForeignKeyInfo()));
-        ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
-        List<String> listDB = getAllTables.getAllDatabases();
+		connectInfoHolder.setConnectInfo(new ConnectInfo(connectInfo.getUserName(), connectInfo.getPassword(),
+				connectInfo.getDbName(), "", "", "", new ForeignKeyInfo()));
+		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+		List<String> listDB = getAllTables.getAllDatabases();
 
-        model.addAttribute("connectInfo", conInfo);
-        model.addAttribute("listDB", listDB);
+		model.addAttribute("connectInfo", conInfo);
+		model.addAttribute("listDB", listDB);
 
-        return "redirect:/getAllTableFormSelectedDB";
-    }
+		return "redirect:/getAllTableFormSelectedDB";
+	}
 
-    // @PostMapping("/getAllTableFormSelectedDB")
-    // public String getAllTableFormSelectedDB(Model model) {
-    // ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
-    // String tblName = req.getParameter("tableSelect");
-    // conInfo.setTblName(tblName);
-    // connectInfoHolder.setConnectInfo(conInfo);
-    // conInfo = connectInfoHolder.getConnectInfo();
-    // List<String> listtBL = getAllTables.getAllTableNames();
-    // List<String> listDB = getAllTables.getAllDatabases();
-    // model.addAttribute("connectInfo", conInfo);
-    // model.addAttribute("listDB", listDB);
-    // model.addAttribute("listtBL", listtBL);
-    // return "index";
-    // }
+	// @PostMapping("/getAllTableFormSelectedDB")
+	// public String getAllTableFormSelectedDB(Model model) {
+	// ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+	// String tblName = req.getParameter("tableSelect");
+	// conInfo.setTblName(tblName);
+	// connectInfoHolder.setConnectInfo(conInfo);
+	// conInfo = connectInfoHolder.getConnectInfo();
+	// List<String> listtBL = getAllTables.getAllTableNames();
+	// List<String> listDB = getAllTables.getAllDatabases();
+	// model.addAttribute("connectInfo", conInfo);
+	// model.addAttribute("listDB", listDB);
+	// model.addAttribute("listtBL", listtBL);
+	// return "index";
+	// }
 
-    @GetMapping("/getAllTableFormSelectedDB")
-    public String getAllTableFormSelectedDBLayout(Model model) {
+	@GetMapping("/getAllTableFormSelectedDB")
+	public String getAllTableFormSelectedDBLayout(Model model) {
 
-        ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
-        List<String> listDB = getAllTables.getAllDatabases();
-        List<String> listtBL = getAllTables.getAllTableNames();
-        model.addAttribute("listDB", listDB);
-        model.addAttribute("connectInfo", conInfo);
-        model.addAttribute("listtBL", listtBL);
-        model.addAttribute("Component", "SelectTableComponent");
-        return "ExtendLayout";
-    }
+		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+		List<String> listDB = getAllTables.getAllDatabases();
+		List<String> listtBL = getAllTables.getAllTableNames();
+		model.addAttribute("listDB", listDB);
+		model.addAttribute("connectInfo", conInfo);
+		model.addAttribute("listtBL", listtBL);
+		model.addAttribute("Component", "SelectTableComponent");
+		return "ExtendLayout";
+	}
 
-    @GetMapping("/customTableComlumnToGenerate")
-    public String getCustomTableComlumnToGenerate(Model model) {
+	@GetMapping("/customTableComlumnToGenerate")
+	public String getCustomTableComlumnToGenerate(Model model) {
 
-        ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
-        if (conInfo == null || conInfo.getTblName() == null) {
-            return "redirect:/getAllTableFormSelectedDB";
-        }
+		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+		if (conInfo == null || conInfo.getTblName() == null) {
+			return "redirect:/getAllTableFormSelectedDB";
+		}
 
-        List<String> listDB = getAllTables.getAllDatabases();
-        List<String> listtBL = getAllTables.getAllTableNames();
-        model.addAttribute("listDB", listDB);
-        model.addAttribute("connectInfo", conInfo);
-        model.addAttribute("listtBL", listtBL);
-        model.addAttribute("Component", "SelectTableComponent");
-        return "ExtendLayout";
-    }
+		List<String> listDB = getAllTables.getAllDatabases();
+		List<String> listtBL = getAllTables.getAllTableNames();
+		model.addAttribute("listDB", listDB);
+		model.addAttribute("connectInfo", conInfo);
+		model.addAttribute("listtBL", listtBL);
+		model.addAttribute("Component", "SelectTableComponent");
+		return "ExtendLayout";
+	}
 
-    @PostMapping("/customTableComlumnToGenerate")
-    public String PostCustomTableComlumnToGenerate(Model model, @ModelAttribute ConnectInfo connectInfo)
-            throws SQLException, IOException {
-        ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
-        if (conInfo == null || conInfo.getTblName() == null) {
-            return "redirect:/Home";
-        }
-        // set Table Name want to Generate
-        conInfo.setTblName(connectInfo.getTblName());
-        conInfo.setBackEndSourceURL(connectInfo.getBackEndSourceURL());
-        conInfo.setFrontEndSourceURL(connectInfo.getFrontEndSourceURL());
-        connectInfoHolder.setConnectInfo(conInfo);
-        // Re-connect
-        conInfo = connectInfoHolder.getConnectInfo();
-        // Get Value to generate
-        List<ColumnInfo> listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
-        //extract pakageName
-        List<String> packageNameSplit = Arrays.asList(connectInfo.getBackEndSourceURL().split("\\\\"));
-        //Define
-        HandleGenerate handelGen = new HandleGenerate();
-        // Gennerate Entity
-        List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds,connectInfo.getTblName());
-        List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds,connectInfo.getTblName());
-                        System.out.println("Export keys");      
-        ExportedKeysInfos.forEach(e->{
-            System.out.println(e.getPkColumn()+" "+e.getFkColumn()+" "+e.getPkTable());
-        });
-        if (!connectInfo.getTblName().equals( "All") ) {
-            handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos);
-            handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
-            handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
-        } else {
+	@PostMapping("/customTableComlumnToGenerate")
+	public String PostCustomTableComlumnToGenerate(Model model, @ModelAttribute ConnectInfo connectInfo)
+			throws SQLException, IOException {
+		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+		if (conInfo == null || conInfo.getTblName() == null) {
+			return "redirect:/Home";
+		}
+		// set Table Name want to Generate
+		conInfo.setTblName(connectInfo.getTblName());
+		conInfo.setBackEndSourceURL(connectInfo.getBackEndSourceURL());
+		conInfo.setFrontEndSourceURL(connectInfo.getFrontEndSourceURL());
+		connectInfoHolder.setConnectInfo(conInfo);
+		// Re-connect
+		conInfo = connectInfoHolder.getConnectInfo();
+		// Get Value to generate
+		List<ColumnInfo> listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
+		// extract pakageName
+		List<String> packageNameSplit = Arrays.asList(connectInfo.getBackEndSourceURL().split("\\\\"));
+		// Define
+		HandleGenerate handelGen = new HandleGenerate();
+		// Generate Entity
+		List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, connectInfo.getTblName());
+		List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, connectInfo.getTblName());
 
-            List<String> listtBL = getAllTables.getAllTableNames();
-            for (String tableItem : listtBL) {
-                connectInfo.setTblName(tableItem);
-                listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
-                handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo,
-                        ImportedKeysInfos);
-                handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
-                handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
-            }
-        }
+		if (!connectInfo.getTblName().equals("All")) {
+			handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
+					ExportedKeysInfos);
+			handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+			handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+		} else {
 
-        List<String> listDB = getAllTables.getAllDatabases();
-        List<String> listtBL = getAllTables.getAllTableNames();
-        model.addAttribute("listDB", listDB);
-        model.addAttribute("connectInfo", conInfo);
-        model.addAttribute("listtBL", listtBL);
-        return "redirect:/getAllTableFormSelectedDB";
-    }
+			List<String> listtBL = getAllTables.getAllTableNames();
+			for (String tableItem : listtBL) {
+				connectInfo.setTblName(tableItem);
+				listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
+				handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
+						ExportedKeysInfos);
+				handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+				handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+			}
+		}
+
+		List<String> listDB = getAllTables.getAllDatabases();
+		List<String> listtBL = getAllTables.getAllTableNames();
+		model.addAttribute("listDB", listDB);
+		model.addAttribute("connectInfo", conInfo);
+		model.addAttribute("listtBL", listtBL);
+		return "redirect:/getAllTableFormSelectedDB";
+	}
 }
