@@ -1,0 +1,59 @@
+package {{packageName}}.API;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aos.AOSBE.Entity.*;
+import com.aos.AOSBE.Service.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+
+@RestController
+@RequestMapping("/Api/Admin")
+@CrossOrigin(origins = "http://localhost:5173")
+public class {{Classname}}API {
+	@Autowired
+	private {{Classname}}Service {{variableName}}Service;
+
+	@GetMapping("/{{Classname}}")
+	public ResponseEntity<List<{{Classname}}>> getAll{{Classname}}Api() {
+		List<{{Classname}}> {{variableName}} = {{variableName}}Service.{{variableName}}FindAll();
+		return ResponseEntity.ok({{variableName}});
+	}
+
+	@GetMapping("/{{Classname}}/{id}")
+	public ResponseEntity<{{Classname}}> get{{Classname}}ByIdApi(@PathVariable int id) {
+		{{Classname}} {{variableName}} =({{Classname}}){{variableName}}Service.{{variableName}}FindById(id).orElse(new {{Classname}}());
+		return ResponseEntity.ok({{variableName}});
+	}
+	@PostMapping("/{{Classname}}")
+	public ResponseEntity<{{Classname}}> addNew{{Classname}}(@RequestBody {{Classname}} entity) {
+	    {{Classname}} saved = {{variableName}}Service.{{variableName}}Save(entity);
+	    return ResponseEntity.ok(saved);
+	}
+
+	@PutMapping("/{{Classname}}")
+	public ResponseEntity<{{Classname}}> update{{Classname}}(@RequestBody {{Classname}} entity) {
+	    {{Classname}} updated = {{variableName}}Service.{{variableName}}Save(entity); 
+	    return ResponseEntity.ok(updated);
+	}
+	@DeleteMapping("/{{Classname}}/{id}")
+	public ResponseEntity<Void> delete{{Classname}}(@PathVariable int id) {
+	    {{variableName}}Service.{{variableName}}DeleteById(id); 
+	    return ResponseEntity.noContent().build(); 
+	}
+
+
+	
+}

@@ -120,6 +120,7 @@ public class HandleGenerate {
 		Map<String, Object> context = new HashMap<>();
 
 		String firstUpcaseClassName = commonFunction.ConvertToClassName(connectInfo.getTblName());
+
 		context.put("className", firstUpcaseClassName);
 		context.put("packageName",
 				packageNameSplit.get(packageNameSplit.size() - 3) + "."
@@ -156,7 +157,11 @@ public class HandleGenerate {
 		String firstUpcaseClassName = commonFunction.ConvertToClassName(connectInfo.getTblName());
 		String lowerClassName = commonFunction.ConvertToVariableName(connectInfo.getTblName());
 		Map<String, Object> context = new HashMap<>();
-
+		Map<String, Object> contextToGenBaseApi = new HashMap<>();
+		context.put("packageName",
+				packageNameSplit.get(packageNameSplit.size() - 3) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 1));
 		context.put("className", firstUpcaseClassName);
 		context.put("variableClassName", lowerClassName);
 
@@ -177,6 +182,19 @@ public class HandleGenerate {
 				conInfo.getBackEndSourceURL() + "/Service" + "/" + firstUpcaseClassName + "Service.java")) {
 
 			mustache.execute(writer, context);
+		}
+		contextToGenBaseApi.put("packageName",
+				packageNameSplit.get(packageNameSplit.size() - 3) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 1));
+		contextToGenBaseApi.put("Classname", firstUpcaseClassName);
+		contextToGenBaseApi.put("variableName", lowerClassName);
+		new File(conInfo.getBackEndSourceURL() + "//API").mkdirs(); // Tạo thư mục nếu chưa có
+		Mustache mustacheToGenBASEAPI = mf.compile("TemplateToGenerate/controlerAPI.mustache");
+		try (Writer writer = new FileWriter(
+				conInfo.getBackEndSourceURL() + "/API" + "/" + firstUpcaseClassName + "API.java")) {
+
+			mustacheToGenBASEAPI.execute(writer, contextToGenBaseApi);
 		}
 
 //		Path path = Paths.get(conInfo.getBackEndSourceURL() + "/Service" + "/" + firstUpcaseClassName + ".java");
