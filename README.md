@@ -10,4 +10,4 @@ nhập URL path muốn generate
 nhấn select
 Luu ý nhấn select Another DB mỗi lần chỉnh bảng do Connection được làm mới mỗi request
 
-
+thêm mới tự generate ControllerAPI Lưu úy mới tự generate cho Api/Admin
