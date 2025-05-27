@@ -64,7 +64,6 @@ public class HandleGenerate {
 			fields.add(itemFeilds);
 		}
 		for (ForeignKeyInfo e : importedKeysInfosList) {
-			System.out.println(e.getFkColumn() + " " + e.getPkColumn() + " " + e.getPkTable() + "\n");
 
 			Map<String, String> itemForeignKeys = new HashMap<>();
 			String firstUpcaseClassNameImportKey = commonFunction.ConvertToClassName(e.getPkTable());
@@ -73,23 +72,10 @@ public class HandleGenerate {
 			itemForeignKeys.put("fkColumnName", e.getFkColumn());
 			itemForeignKeys.put("pkClassName", firstUpcaseClassNameImportKey);
 			itemForeignKeys.put("camelFieldName", variableCamelFieldName); // Tên cột
+
+			System.out.println(e.getPkTable() + "\n"+e.getFkColumn() + " " + e.getPkColumn() + " "+variableCamelFieldName+  "\n" );
 			foreignKeys.add(itemForeignKeys);
 		}
-//		for (ForeignKeyInfo e : exportedKeysInfosList) {
-//			System.out.println(e.getFkColumn()+" "+ e.getPkColumn()+" "+ e.getPkTable()+"\n");
-//			Map<String, String> itemForeignKeys = new HashMap<>();
-//			String firstUpcaseClassNameExportKey = commonFunction.ConvertToVariableName(e.getPkTable());
-//			String firstUpcasePkExportKeyColumn = commonFunction.ConvertToClassName(e.getPkTable());
-//			String firstUpcaseFkExportKeyColumn = commonFunction.ConvertToClassName(e.getFkColumn());
-//			itemForeignKeys.put("fkColumnNameExported", e.getFkColumn());
-//			itemForeignKeys.put("pkClassNameExported", firstUpcasePkExportKeyColumn);
-//			itemForeignKeys.put("camelFieldNameExported", firstUpcaseClassNameExportKey); // Tên cột
-//			exportKeys.add(itemForeignKeys);
-//			{{#exportKeys}}
-//		    @OneToMany(mappedBy = "{{fkColumnNameExported}}", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-//		    private List<{{pkClassNameExported}}> {{camelFieldNameExported}};
-//		{{/exportKeys}}
-//		}
 		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
 		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
 		case "INT", "INT IDENTITY", "INTEGER" -> "int";
@@ -114,7 +100,28 @@ public class HandleGenerate {
 		}
 
 	}
+	public void  handleGenerateAdminRouter (List<String> listtBL, ConnectInfo conInfo) throws SQLException, IOException {
+		Map<String, Object> context = new HashMap<>();
+		List<Map<String,String>> feilds= new ArrayList<>();
+		for(String tableName : listtBL) {
+			Map<String,String> feildFeild= new HashMap<>();
+			String firstUpcaseClassName = commonFunction.ConvertToClassName(tableName);
 
+			feildFeild.put("className", firstUpcaseClassName);
+			feilds.add(feildFeild);
+		}
+		context.put("fields", feilds);
+
+		new File(conInfo.getFrontEndSourceURL() +"/src/router/Admin").mkdirs(); // Tạo thư mục nếu chưa có
+		MustacheFactory mf = new DefaultMustacheFactory();
+		Mustache mustache = mf.compile("TemplateToGenerate/adminRouterJS.mustache");
+
+		try (Writer writer = new FileWriter(
+				conInfo.getFrontEndSourceURL() +"/src/router/Admin/AdminRouter.js")) {
+			mustache.execute(writer, context);
+		}
+	}
+	
 	public void HandleGenerateRepository(ConnectInfo connectInfo, List<String> packageNameSplit,
 			List<ColumnInfo> listtBLColumn, ConnectInfo conInfo) throws SQLException, IOException {
 		Map<String, Object> context = new HashMap<>();

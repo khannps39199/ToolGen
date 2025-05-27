@@ -43,7 +43,7 @@ public class CommonFunction {
 				incols=-1;
 			}
 			result = extractName[0];
-			for (int i = 0; i < extractName.length - incols; i++) {
+			for (int i = 1; i < extractName.length - incols; i++) {
 				result += firstUpCase(extractName[i]);
 			}
 			return result;

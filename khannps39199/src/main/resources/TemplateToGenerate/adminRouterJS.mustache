@@ -1,0 +1,34 @@
+import ModuleQuanLy from '../../components/Admin/ModuleQuanLy.vue'
+const listDashBoard = [
+{{#fields}}
+    "{{className}}",
+{{/fields}}
+]
+
+export default [
+
+{{#fields}}  {
+        path: '/Admin/{{className}}',
+        component: ModuleQuanLy,
+        props: { id: "-1", TableName: '{{className}}', isEditing: false, listDashBoard: listDashBoard }
+    },
+    {
+        path: '/Admin/{{className}}/view/:id',
+        component: ModuleQuanLy,
+        props: route => ({ id: route.params.id, action: 'view', TableName: '{{className}}', isEditing: false, listDashBoard: listDashBoard })
+    },
+    {
+        path: '/Admin/{{className}}/update/:id',
+        component: ModuleQuanLy,
+        props: route => ({ id: route.params.id, action: 'update', TableName: '{{className}}', isEditing: true, listDashBoard: listDashBoard })
+    },
+    {
+        path: '/Admin/{{className}}/delete/:id',
+        component: ModuleQuanLy,
+        props: route => ({ id: route.params.id, action: 'delete', TableName: '{{className}}', isEditing: false, listDashBoard: listDashBoard })
+    },
+{{/fields}}
+
+  
+    
+]

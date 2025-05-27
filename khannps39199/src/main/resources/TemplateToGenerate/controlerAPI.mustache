@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.data.domain.PageRequest;
 import com.aos.AOSBE.Entity.*;
 import com.aos.AOSBE.Service.*;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,8 +27,11 @@ public class {{Classname}}API {
 	private {{Classname}}Service {{variableName}}Service;
 
 	@GetMapping("/{{Classname}}")
-	public ResponseEntity<List<{{Classname}}>> getAll{{Classname}}Api() {
-		List<{{Classname}}> {{variableName}} = {{variableName}}Service.{{variableName}}FindAll();
+	public ResponseEntity<List<{{Classname}}>> getAll{{Classname}}Api(	
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(defaultValue = "5") int size) {
+			
+		List<{{Classname}}> {{variableName}} = {{variableName}}Service.{{variableName}}FindAll(page,size);
 		return ResponseEntity.ok({{variableName}});
 	}
 

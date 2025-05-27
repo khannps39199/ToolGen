@@ -56,7 +56,7 @@ public class ToolAutoGenSiteController {
 		// ds.setTrustServerCertificate(false);
 
 		connectInfoHolder.setConnectInfo(new ConnectInfo(connectInfo.getUserName(), connectInfo.getPassword(),
-				connectInfo.getDbName(), "", connectInfo.getBackEndSourceURL()!=null?connectInfo.getBackEndSourceURL():"", "", new ForeignKeyInfo()));
+				connectInfo.getDbName(), "", connectInfo.getBackEndSourceURL()!=null?connectInfo.getBackEndSourceURL():"",  connectInfo.getFrontEndSourceURL()!=null?connectInfo.getFrontEndSourceURL():"", new ForeignKeyInfo()));
 		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
 		List<String> listDB = getAllTables.getAllDatabases();
 
@@ -131,6 +131,7 @@ public class ToolAutoGenSiteController {
 		} else {
 
 			List<String> listtBL = getAllTables.getAllTableNames();
+			handelGen.handleGenerateAdminRouter(listtBL,conInfo);
 			for (String tableItem : listtBL) {
 				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, tableItem);
 				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, tableItem);
