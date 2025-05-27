@@ -5,13 +5,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class ConnectInfoHolder {
 
-    private ConnectInfo connectInfo;
+	private ConnectInfo connectInfo;
 
-    public ConnectInfo getConnectInfo() {
-        return this.connectInfo;
-    }
+	public ConnectInfo getConnectInfo() {
+		return this.connectInfo;
+	}
 
-    public void setConnectInfo(ConnectInfo connectInfo) {
-        this.connectInfo = connectInfo;
-    }
+	public void setConnectInfo(ConnectInfo connectInfo) {
+		this.connectInfo = connectInfo;
+	}
 }

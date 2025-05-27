@@ -33,7 +33,6 @@ public class ToolAutoGenSiteController {
 
 	@GetMapping("/Home")
 	public String getMethodName(Model model) {
-
 		model.addAttribute("connectInfo", new ConnectInfo());
 		List<String> listDB = getAllTables.getAllDatabases();
 		model.addAttribute("listDB", listDB);
@@ -54,23 +53,20 @@ public class ToolAutoGenSiteController {
 		ds.setTrustServerCertificate(true);
 		ds.setEncrypt(true);
 		// ds.setTrustServerCertificate(false);
-
-		connectInfoHolder.setConnectInfo(new ConnectInfo(connectInfo.getUserName(), connectInfo.getPassword(),
-				connectInfo.getDbName(), "", connectInfo.getBackEndSourceURL()!=null?connectInfo.getBackEndSourceURL():"",  connectInfo.getFrontEndSourceURL()!=null?connectInfo.getFrontEndSourceURL():"", new ForeignKeyInfo()));
+		connectInfoHolder.setConnectInfo(
+				new ConnectInfo(connectInfo.getUserName(), connectInfo.getPassword(), connectInfo.getDbName(), "",
+						connectInfo.getBackEndSourceURL() != null ? connectInfo.getBackEndSourceURL() : "",
+						connectInfo.getFrontEndSourceURL() != null ? connectInfo.getFrontEndSourceURL() : "",
+						new ForeignKeyInfo()));
 		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
 		List<String> listDB = getAllTables.getAllDatabases();
-
 		model.addAttribute("connectInfo", conInfo);
 		model.addAttribute("listDB", listDB);
-
 		return "redirect:/getAllTableFormSelectedDB";
 	}
 
-	
-
 	@GetMapping("/getAllTableFormSelectedDB")
 	public String getAllTableFormSelectedDBLayout(Model model) {
-
 		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
 		List<String> listDB = getAllTables.getAllDatabases();
 		List<String> listtBL = getAllTables.getAllTableNames();
@@ -83,12 +79,10 @@ public class ToolAutoGenSiteController {
 
 	@GetMapping("/customTableComlumnToGenerate")
 	public String getCustomTableComlumnToGenerate(Model model) {
-
 		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
 		if (conInfo == null || conInfo.getTblName() == null) {
 			return "redirect:/getAllTableFormSelectedDB";
 		}
-
 		List<String> listDB = getAllTables.getAllDatabases();
 		List<String> listtBL = getAllTables.getAllTableNames();
 		model.addAttribute("listDB", listDB);
@@ -119,19 +113,18 @@ public class ToolAutoGenSiteController {
 		// Define
 		HandleGenerate handelGen = new HandleGenerate();
 		// Generate Entity
-		
-
 		if (!connectInfo.getTblName().equals("All")) {
 			List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, connectInfo.getTblName());
 			List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, connectInfo.getTblName());
 			handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 					ExportedKeysInfos);
+			// Generate Repository
 			handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+			// Define Repository To Service
 			handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
 		} else {
-
 			List<String> listtBL = getAllTables.getAllTableNames();
-			handelGen.handleGenerateAdminRouter(listtBL,conInfo);
+			handelGen.handleGenerateAdminRouter(listtBL, conInfo);
 			for (String tableItem : listtBL) {
 				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, tableItem);
 				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, tableItem);
@@ -143,7 +136,6 @@ public class ToolAutoGenSiteController {
 				handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
 			}
 		}
-
 		List<String> listDB = getAllTables.getAllDatabases();
 		List<String> listtBL = getAllTables.getAllTableNames();
 		model.addAttribute("listDB", listDB);

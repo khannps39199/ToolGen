@@ -12,13 +12,10 @@ import khannps39199.khannps39199.Model.ConnectInfo;
 public class SqlServerConfig {
     @Bean
     public SQLServerDataSource sqlServerDataSource() {
-        return new SQLServerDataSource(); // empty initially
+        return new SQLServerDataSource(); 
     }
-
     @Bean
     public JdbcTemplate jdbcTemplate(SQLServerDataSource ds) {
         return new JdbcTemplate(ds);
     }
-    
-
 }

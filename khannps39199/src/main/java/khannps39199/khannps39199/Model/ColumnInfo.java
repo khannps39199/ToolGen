@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ColumnInfo {
-    private String name;
-    private String sqlType;
+	private String name;
+	private String sqlType;
 }

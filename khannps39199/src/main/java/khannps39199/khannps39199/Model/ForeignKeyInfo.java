@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ForeignKeyInfo {
-    private String fkColumn;
-    private String pkTable;
-    private String pkColumn;
+	private String fkColumn;
+	private String pkTable;
+	private String pkColumn;
 }

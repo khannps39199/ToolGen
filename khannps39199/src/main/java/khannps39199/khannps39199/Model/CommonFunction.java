@@ -25,7 +25,6 @@ public class CommonFunction {
 		String result = "";
 		if (input.contains("_")) {
 			String[] extractName = HandelSplitName(input);
-			
 			for (int i = 0; i < extractName.length; i++) {
 				result += firstUpCase(extractName[i]);
 			}
@@ -38,9 +37,9 @@ public class CommonFunction {
 		String result = "";
 		if (input.contains("_")) {
 			String[] extractName = HandelSplitName(input);
-			int incols=0;
-			if(input.contains("id")) {
-				incols=-1;
+			int incols = 0;
+			if (input.contains("id")) {
+				incols = -1;
 			}
 			result = extractName[0];
 			for (int i = 1; i < extractName.length - incols; i++) {
@@ -50,5 +49,4 @@ public class CommonFunction {
 		}
 		return firstLowCase(input);
 	}
-
 }
