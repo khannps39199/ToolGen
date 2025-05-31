@@ -1,0 +1,21 @@
+package {{packageName}}.DTOS;
+import jakarta.persistence.*;
+
+import java.time.*;
+import java.math.*;
+import java.util.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class {{className}}DTOS {
+{{#fields}}
+    private {{javaType}} {{fieldName}};
+{{/fields}}
+{{#foreignKeys}}
+    private String {{camelFieldName}};
+{{/foreignKeys}}
+}

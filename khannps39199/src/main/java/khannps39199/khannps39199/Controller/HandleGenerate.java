@@ -29,6 +29,8 @@ public class HandleGenerate {
 			List<ColumnInfo> listtBLColumn, ConnectInfo conInfo, List<ForeignKeyInfo> importedKeysInfosList,
 			List<ForeignKeyInfo> exportedKeysInfosList) throws SQLException, IOException {
 		Map<String, Object> context = new HashMap<>();
+		Map<String, Object> contextForDTOS = new HashMap<>();
+		Map<String, Object> contextForMapper = new HashMap<>();
 		String firstUpcaseClassName = commonFunction.ConvertToClassName(connectInfo.getTblName());
 		context.put("className", firstUpcaseClassName);
 		context.put("tableName", connectInfo.getTblName());
@@ -36,11 +38,31 @@ public class HandleGenerate {
 				packageNameSplit.get(packageNameSplit.size() - 3) + "."
 						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
 						+ packageNameSplit.get(packageNameSplit.size() - 1));
+		contextForDTOS.put("className", firstUpcaseClassName);
+		contextForDTOS.put("tableName", connectInfo.getTblName());
+		contextForDTOS.put("packageName",
+				packageNameSplit.get(packageNameSplit.size() - 3) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 1));
+		contextForMapper.put("className", firstUpcaseClassName);
+		contextForMapper.put("tableName", connectInfo.getTblName());
+		contextForMapper.put("packageName",
+				packageNameSplit.get(packageNameSplit.size() - 3) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
+						+ packageNameSplit.get(packageNameSplit.size() - 1));
+		
+		
 		List<Map<String, String>> fields = new ArrayList<>();
+		List<Map<String, String>> fieldsForDTOS = new ArrayList<>();
+		List<Map<String, String>> fieldsForMapper = new ArrayList<>();
 		List<Map<String, String>> foreignKeys = new ArrayList<>();
+		List<Map<String, String>> foreignKeysForDTOS = new ArrayList<>();
 		List<Map<String, String>> exportKeys = new ArrayList<>();
 		for (ColumnInfo e : listtBLColumn) {
+
 			Map<String, String> itemFeilds = new HashMap<>();
+			Map<String, String> itemFeildsForDTOS = new HashMap<>();
+			Map<String, String> itemFeildsForMapper = new HashMap<>();
 			String sqlType = e.getSqlType().toUpperCase();
 			String javaType = switch (sqlType) {
 			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
@@ -56,21 +78,44 @@ public class HandleGenerate {
 			if (isExistsKey) {
 				continue;
 			}
+			
+			
 			String variableFeildName = commonFunction.firstLowCase(commonFunction.ConvertToClassName(e.getName()));
 			itemFeilds.put("javaType", javaType);
 			itemFeilds.put("columnName", e.getName());
 			itemFeilds.put("fieldName", variableFeildName);
+			
+			itemFeildsForDTOS.put("javaType", javaType);
+			itemFeildsForDTOS.put("columnName", e.getName());
+			itemFeildsForDTOS.put("fieldName", variableFeildName);
+			
+			itemFeildsForMapper.put("javaType", javaType);
+			itemFeildsForMapper.put("columnName", e.getName());
+			itemFeildsForMapper.put("fieldName", variableFeildName);
+
 			fields.add(itemFeilds);
+			fieldsForDTOS.add(itemFeildsForDTOS);
+			fieldsForMapper.add(itemFeildsForMapper);
 		}
 		for (ForeignKeyInfo e : importedKeysInfosList) {
+			Map<String, String> itemFeildsForDTOS = new HashMap<>();
 			Map<String, String> itemForeignKeys = new HashMap<>();
+			Map<String, String> itemForeignKeysForDTOS = new HashMap<>();
 			String firstUpcaseClassNameImportKey = commonFunction.ConvertToClassName(e.getPkTable());
 			String variableCamelFieldName = commonFunction.ConvertToVariableName(e.getPkTable());
 			itemForeignKeys.put("fkColumnName", e.getFkColumn());
 			itemForeignKeys.put("pkClassName", firstUpcaseClassNameImportKey);
 			itemForeignKeys.put("camelFieldName", variableCamelFieldName);
+			itemForeignKeysForDTOS.put("fkColumnName", e.getFkColumn());
+			itemForeignKeysForDTOS.put("pkClassName", firstUpcaseClassNameImportKey);
+			itemForeignKeysForDTOS.put("camelFieldName", variableCamelFieldName);
+
+//			itemFeildsForDTOS.put("fieldName", variableCamelFieldName);
+//			fieldsForDTOS.add(itemFeildsForDTOS);
 			foreignKeys.add(itemForeignKeys);
+			foreignKeysForDTOS.add(itemForeignKeysForDTOS);
 		}
+		
 		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
 		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
 		case "INT", "INT IDENTITY", "INTEGER" -> "int";
@@ -80,17 +125,37 @@ public class HandleGenerate {
 		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
 		default -> "String"; // fallback
 		};
-		context.put("className", firstUpcaseClassName);
-		context.put("isInteger", idType.equals("int") ? "@GeneratedValue(strategy = GenerationType.IDENTITY)" : "");
 		context.put("fields", fields);
+		contextForDTOS.put("fields", fieldsForDTOS);
+		contextForMapper.put("fields", fieldsForMapper);
 		context.put("foreignKeys", foreignKeys);
+		contextForDTOS.put("foreignKeys", foreignKeysForDTOS);
+		
+		context.put("isInteger", idType.equals("int") ? "@GeneratedValue(strategy = GenerationType.IDENTITY)" : "");
 		context.put("exportKeys", exportKeys);
+
 		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
 		MustacheFactory mf = new DefaultMustacheFactory();
 		Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
 		try (Writer writer = new FileWriter(
 				conInfo.getBackEndSourceURL() + "/Entity" + "/" + firstUpcaseClassName + ".java")) {
 			mustache.execute(writer, context);
+		}
+		
+		new File(conInfo.getBackEndSourceURL() + "/DTOS").mkdirs(); // Tạo thư mục nếu chưa có
+		mf = new DefaultMustacheFactory();
+		mustache = mf.compile("TemplateToGenerate/DTOS.mustache");
+		try (Writer writer = new FileWriter(
+				conInfo.getBackEndSourceURL() + "/DTOS" + "/" + firstUpcaseClassName + "DTOS.java")) {
+			mustache.execute(writer, contextForDTOS);
+		}
+		
+		new File(conInfo.getBackEndSourceURL() + "/Mapper").mkdirs(); // Tạo thư mục nếu chưa có
+		mf = new DefaultMustacheFactory();
+		mustache = mf.compile("TemplateToGenerate/Mapper.mustache");
+		try (Writer writer = new FileWriter(
+				conInfo.getBackEndSourceURL() + "/Mapper" + "/" + firstUpcaseClassName + "Mapper.java")) {
+			mustache.execute(writer, contextForMapper);
 		}
 
 	}
