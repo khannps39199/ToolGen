@@ -10,7 +10,7 @@ public class {{className}}Mapper {
 	public {{className}}DTOS mapper({{className}} entity) {
 		return new {{className}}DTOS(
 				{{#fields}}
-				    entity.{{fieldName}},
+				    entity.{{fieldName}}
 				{{/fields}}
 			);
 	}

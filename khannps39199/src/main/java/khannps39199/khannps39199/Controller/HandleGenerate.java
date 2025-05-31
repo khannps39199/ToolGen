@@ -50,16 +50,15 @@ public class HandleGenerate {
 				packageNameSplit.get(packageNameSplit.size() - 3) + "."
 						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
 						+ packageNameSplit.get(packageNameSplit.size() - 1));
-		
-		
+
 		List<Map<String, String>> fields = new ArrayList<>();
 		List<Map<String, String>> fieldsForDTOS = new ArrayList<>();
 		List<Map<String, String>> fieldsForMapper = new ArrayList<>();
 		List<Map<String, String>> foreignKeys = new ArrayList<>();
 		List<Map<String, String>> foreignKeysForDTOS = new ArrayList<>();
+		List<Map<String, String>> foreignKeysForMapper = new ArrayList<>();
 		List<Map<String, String>> exportKeys = new ArrayList<>();
 		for (ColumnInfo e : listtBLColumn) {
-
 			Map<String, String> itemFeilds = new HashMap<>();
 			Map<String, String> itemFeildsForDTOS = new HashMap<>();
 			Map<String, String> itemFeildsForMapper = new HashMap<>();
@@ -78,29 +77,33 @@ public class HandleGenerate {
 			if (isExistsKey) {
 				continue;
 			}
-			
-			
+
 			String variableFeildName = commonFunction.firstLowCase(commonFunction.ConvertToClassName(e.getName()));
 			itemFeilds.put("javaType", javaType);
 			itemFeilds.put("columnName", e.getName());
 			itemFeilds.put("fieldName", variableFeildName);
-			
+
 			itemFeildsForDTOS.put("javaType", javaType);
 			itemFeildsForDTOS.put("columnName", e.getName());
 			itemFeildsForDTOS.put("fieldName", variableFeildName);
-			
+
 			itemFeildsForMapper.put("javaType", javaType);
 			itemFeildsForMapper.put("columnName", e.getName());
-			itemFeildsForMapper.put("fieldName", variableFeildName);
+
+			if (javaType.equals("boolean")) {
+				itemFeildsForMapper.put("fieldName", variableFeildName + "(),");
+			} else {
+				itemFeildsForMapper.put("fieldName", "get" + commonFunction.ConvertToClassName(e.getName()) + "(),");
+			}
 
 			fields.add(itemFeilds);
 			fieldsForDTOS.add(itemFeildsForDTOS);
 			fieldsForMapper.add(itemFeildsForMapper);
 		}
 		for (ForeignKeyInfo e : importedKeysInfosList) {
-			Map<String, String> itemFeildsForDTOS = new HashMap<>();
 			Map<String, String> itemForeignKeys = new HashMap<>();
 			Map<String, String> itemForeignKeysForDTOS = new HashMap<>();
+			Map<String, String> itemForeignKeysForMapper = new HashMap<>();
 			String firstUpcaseClassNameImportKey = commonFunction.ConvertToClassName(e.getPkTable());
 			String variableCamelFieldName = commonFunction.ConvertToVariableName(e.getPkTable());
 			itemForeignKeys.put("fkColumnName", e.getFkColumn());
@@ -110,12 +113,12 @@ public class HandleGenerate {
 			itemForeignKeysForDTOS.put("pkClassName", firstUpcaseClassNameImportKey);
 			itemForeignKeysForDTOS.put("camelFieldName", variableCamelFieldName);
 
-//			itemFeildsForDTOS.put("fieldName", variableCamelFieldName);
-//			fieldsForDTOS.add(itemFeildsForDTOS);
+			itemForeignKeysForMapper.put("fieldName", "get" + firstUpcaseClassNameImportKey + "().getId(),");
 			foreignKeys.add(itemForeignKeys);
 			foreignKeysForDTOS.add(itemForeignKeysForDTOS);
+			fieldsForMapper.add(itemForeignKeysForMapper);
 		}
-		
+
 		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
 		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
 		case "INT", "INT IDENTITY", "INTEGER" -> "int";
@@ -125,14 +128,23 @@ public class HandleGenerate {
 		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
 		default -> "String"; // fallback
 		};
-		context.put("fields", fields);
-		contextForDTOS.put("fields", fieldsForDTOS);
-		contextForMapper.put("fields", fieldsForMapper);
-		context.put("foreignKeys", foreignKeys);
-		contextForDTOS.put("foreignKeys", foreignKeysForDTOS);
+		
+		Map<String,String> handleLastComa=fieldsForMapper.get(fieldsForMapper.size()-1);
+		String lastField=handleLastComa.get("fieldName");
+		lastField=lastField.substring(0,lastField.length()-1);
+		handleLastComa.put("fieldName", lastField);
+		fieldsForMapper.set(fieldsForMapper.size()-1,handleLastComa);
 		
 		context.put("isInteger", idType.equals("int") ? "@GeneratedValue(strategy = GenerationType.IDENTITY)" : "");
 		context.put("exportKeys", exportKeys);
+		context.put("fields", fields);
+		
+		contextForDTOS.put("fields", fieldsForDTOS);
+		contextForMapper.put("fields", fieldsForMapper);
+		
+		context.put("foreignKeys", foreignKeys);
+		contextForDTOS.put("foreignKeys", foreignKeysForDTOS);
+		
 
 		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
 		MustacheFactory mf = new DefaultMustacheFactory();
@@ -141,7 +153,7 @@ public class HandleGenerate {
 				conInfo.getBackEndSourceURL() + "/Entity" + "/" + firstUpcaseClassName + ".java")) {
 			mustache.execute(writer, context);
 		}
-		
+
 		new File(conInfo.getBackEndSourceURL() + "/DTOS").mkdirs(); // Tạo thư mục nếu chưa có
 		mf = new DefaultMustacheFactory();
 		mustache = mf.compile("TemplateToGenerate/DTOS.mustache");
@@ -149,7 +161,7 @@ public class HandleGenerate {
 				conInfo.getBackEndSourceURL() + "/DTOS" + "/" + firstUpcaseClassName + "DTOS.java")) {
 			mustache.execute(writer, contextForDTOS);
 		}
-		
+
 		new File(conInfo.getBackEndSourceURL() + "/Mapper").mkdirs(); // Tạo thư mục nếu chưa có
 		mf = new DefaultMustacheFactory();
 		mustache = mf.compile("TemplateToGenerate/Mapper.mustache");
