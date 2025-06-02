@@ -83,6 +83,9 @@ public class GetAllTables {
 			ResultSet rs = metaData.getTables(null, null, "%", new String[] { "TABLE" });
 			while (rs.next()) {
 				String tableName = rs.getString("TABLE_NAME");
+				if (tableName.equals("trace_xe_event_map") ||tableName.equals("trace_xe_action_map")) {
+					continue;
+				}
 				tableNames.add(tableName);
 			}
 		} catch (SQLException e) {
