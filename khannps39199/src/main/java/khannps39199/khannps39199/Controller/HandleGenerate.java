@@ -54,14 +54,17 @@ public class HandleGenerate {
 		List<Map<String, String>> fields = new ArrayList<>();
 		List<Map<String, String>> fieldsForDTOS = new ArrayList<>();
 		List<Map<String, String>> fieldsForMapper = new ArrayList<>();
+		List<Map<String, String>> fieldsForMapperToObject = new ArrayList<>();
 		List<Map<String, String>> foreignKeys = new ArrayList<>();
 		List<Map<String, String>> foreignKeysForDTOS = new ArrayList<>();
 		List<Map<String, String>> foreignKeysForMapper = new ArrayList<>();
+		List<Map<String, String>> foreignServiceForMapperToObject = new ArrayList<>();
 		List<Map<String, String>> exportKeys = new ArrayList<>();
 		for (ColumnInfo e : listtBLColumn) {
 			Map<String, String> itemFeilds = new HashMap<>();
 			Map<String, String> itemFeildsForDTOS = new HashMap<>();
 			Map<String, String> itemFeildsForMapper = new HashMap<>();
+			Map<String, String> itemFeildsForMapperToObject = new HashMap<>();
 			String sqlType = e.getSqlType().toUpperCase();
 			String javaType = switch (sqlType) {
 			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
@@ -91,19 +94,25 @@ public class HandleGenerate {
 			itemFeildsForMapper.put("columnName", e.getName());
 
 			if (javaType.equals("boolean")) {
-				itemFeildsForMapper.put("fieldName", variableFeildName + "(),");
+				itemFeildsForMapper.put("fieldName", "entity." + variableFeildName + "(),");
+			
 			} else {
-				itemFeildsForMapper.put("fieldName", "get" + commonFunction.ConvertToClassName(e.getName()) + "(),");
+				itemFeildsForMapper.put("fieldName",
+						"entity.get" + commonFunction.ConvertToClassName(e.getName()) + "(),");
 			}
 
 			fields.add(itemFeilds);
 			fieldsForDTOS.add(itemFeildsForDTOS);
+
 			fieldsForMapper.add(itemFeildsForMapper);
+			fieldsForMapperToObject.add(itemFeildsForMapper);
 		}
 		for (ForeignKeyInfo e : importedKeysInfosList) {
 			Map<String, String> itemForeignKeys = new HashMap<>();
 			Map<String, String> itemForeignKeysForDTOS = new HashMap<>();
 			Map<String, String> itemForeignKeysForMapper = new HashMap<>();
+			Map<String, String> itemForeignKeysForMapperToObject = new HashMap<>();
+			Map<String, String> itemForeignServiceForMapperToObject = new HashMap<>();
 			String firstUpcaseClassNameImportKey = commonFunction.ConvertToClassName(e.getPkTable());
 			String variableCamelFieldName = commonFunction.ConvertToVariableName(e.getPkTable());
 			itemForeignKeys.put("fkColumnName", e.getFkColumn());
@@ -113,10 +122,20 @@ public class HandleGenerate {
 			itemForeignKeysForDTOS.put("pkClassName", firstUpcaseClassNameImportKey);
 			itemForeignKeysForDTOS.put("camelFieldName", variableCamelFieldName);
 
-			itemForeignKeysForMapper.put("fieldName", "get" + firstUpcaseClassNameImportKey + "().getId(),");
+			itemForeignKeysForMapper.put("fieldName","entity.get"  + firstUpcaseClassNameImportKey + "().getId(),");
+			itemForeignKeysForMapperToObject.put("fieldName",
+					variableCamelFieldName + "Service." + variableCamelFieldName + "FindById(entity.get"
+							+ firstUpcaseClassNameImportKey + "()).orElse(null),");
+
+			itemForeignServiceForMapperToObject.put("classNameService", firstUpcaseClassNameImportKey);
+			itemForeignServiceForMapperToObject.put("variableNameService", variableCamelFieldName);
+
 			foreignKeys.add(itemForeignKeys);
 			foreignKeysForDTOS.add(itemForeignKeysForDTOS);
+
 			fieldsForMapper.add(itemForeignKeysForMapper);
+			fieldsForMapperToObject.add(itemForeignKeysForMapperToObject);
+			foreignServiceForMapperToObject.add(itemForeignServiceForMapperToObject);
 		}
 
 		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
@@ -128,23 +147,42 @@ public class HandleGenerate {
 		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
 		default -> "String"; // fallback
 		};
+
+		Map<String, String> handleLastComa = fieldsForMapper.get(fieldsForMapper.size() - 1);
+		String lastField = handleLastComa.get("fieldName");
+		if(!lastField.substring(lastField.length() - 1).contains(")")) {
+			lastField = lastField.substring(0, lastField.length() - 1);
+			handleLastComa.put("fieldName", lastField);
+			fieldsForMapper.set(fieldsForMapper.size() - 1, handleLastComa);
+		}
+	
+
+		Map<String, String> handleLastComaForMapperToObject = fieldsForMapperToObject
+				.get(fieldsForMapperToObject.size() - 1);
+		String lastFieldForMapperToObject = handleLastComaForMapperToObject.get("fieldName");
+		if(!lastFieldForMapperToObject.substring(lastFieldForMapperToObject.length() - 1).contains(")")) {
+			lastFieldForMapperToObject = lastFieldForMapperToObject.substring(0, lastFieldForMapperToObject.length() - 1);
+			handleLastComaForMapperToObject.put("fieldName", lastFieldForMapperToObject);
+			fieldsForMapperToObject.set(fieldsForMapperToObject.size() - 1, handleLastComaForMapperToObject);
+		}
 		
-		Map<String,String> handleLastComa=fieldsForMapper.get(fieldsForMapper.size()-1);
-		String lastField=handleLastComa.get("fieldName");
-		lastField=lastField.substring(0,lastField.length()-1);
-		handleLastComa.put("fieldName", lastField);
-		fieldsForMapper.set(fieldsForMapper.size()-1,handleLastComa);
 		
+
 		context.put("isInteger", idType.equals("int") ? "@GeneratedValue(strategy = GenerationType.IDENTITY)" : "");
 		context.put("exportKeys", exportKeys);
 		context.put("fields", fields);
-		
+
 		contextForDTOS.put("fields", fieldsForDTOS);
 		contextForMapper.put("fields", fieldsForMapper);
-		
+
+		contextForMapper.put("fieldsmapperToObject", fieldsForMapperToObject);
+		contextForMapper.put("foreignService", foreignServiceForMapperToObject);
+
+		String lowerClassName = commonFunction.ConvertToVariableName(connectInfo.getTblName());
+		contextForMapper.put("variableName", lowerClassName);
+
 		context.put("foreignKeys", foreignKeys);
 		contextForDTOS.put("foreignKeys", foreignKeysForDTOS);
-		
 
 		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
 		MustacheFactory mf = new DefaultMustacheFactory();

@@ -1,17 +1,30 @@
 package {{packageName}}.Mapper;
 
 import java.time.LocalDateTime;
-
 import com.aos.AOSBE.DTOS.*;
 import com.aos.AOSBE.Entity.*;
-
+import com.aos.AOSBE.Service.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class {{className}}Mapper {
+	{{#foreignService}}
+	@Autowired
+	private {{classNameService}}Service {{variableNameService}}Service;
+	{{/foreignService}}
+	
 	public {{className}}DTOS mapper({{className}} entity) {
 		return new {{className}}DTOS(
 				{{#fields}}
-				    entity.{{fieldName}}
+				    {{fieldName}}
 				{{/fields}}
 			);
 	}
+	public {{className}} mapperToObject({{className}}DTOS entity) {
+		return new {{className}}(
+				{{#fieldsmapperToObject}}
+					{{fieldName}}
+				{{/fieldsmapperToObject}}
+			);
+	}
+	
 }

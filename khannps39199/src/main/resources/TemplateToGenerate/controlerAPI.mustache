@@ -47,8 +47,9 @@ public class {{Classname}}API {
 		return ResponseEntity.ok({{variableName}});
 	}
 	@PostMapping("/{{Classname}}")
-	public ResponseEntity<{{Classname}}> addNew{{Classname}}(@RequestBody {{Classname}} entity) {
-	    {{Classname}} saved = {{variableName}}Service.{{variableName}}Save(entity);
+	public ResponseEntity<{{Classname}}> addNew{{Classname}}(@RequestBody {{Classname}}DTOS entity) {
+	    
+	    {{Classname}} saved = {{variableName}}Service.{{variableName}}Save({{variableName}}Mapper.mapperToObject(entity));	    
 	    return ResponseEntity.ok(saved);
 	}
 
