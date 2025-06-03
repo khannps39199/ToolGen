@@ -31,6 +31,8 @@ public class HandleGenerate {
 		Map<String, Object> context = new HashMap<>();
 		Map<String, Object> contextForDTOS = new HashMap<>();
 		Map<String, Object> contextForMapper = new HashMap<>();
+		Map<String, Object> contextForFormFE = new HashMap<>();
+		Map<String, Object> contextForFormFEIndex = new HashMap<>();
 		String firstUpcaseClassName = commonFunction.ConvertToClassName(connectInfo.getTblName());
 		context.put("className", firstUpcaseClassName);
 		context.put("tableName", connectInfo.getTblName());
@@ -55,6 +57,8 @@ public class HandleGenerate {
 		List<Map<String, String>> fieldsForDTOS = new ArrayList<>();
 		List<Map<String, String>> fieldsForMapper = new ArrayList<>();
 		List<Map<String, String>> fieldsForMapperToObject = new ArrayList<>();
+		List<Map<String, String>> fieldsForFromFE = new ArrayList<>();
+		List<Map<String, String>> fieldsForReacticeObject = new ArrayList<>();
 		List<Map<String, String>> foreignKeys = new ArrayList<>();
 		List<Map<String, String>> foreignKeysForDTOS = new ArrayList<>();
 		List<Map<String, String>> foreignKeysForMapper = new ArrayList<>();
@@ -65,6 +69,8 @@ public class HandleGenerate {
 			Map<String, String> itemFeildsForDTOS = new HashMap<>();
 			Map<String, String> itemFeildsForMapper = new HashMap<>();
 			Map<String, String> itemFeildsForMapperToObject = new HashMap<>();
+			Map<String, String> itemFeildsForFormFE = new HashMap<>();
+			Map<String, String> itemFeildsForReacticeObject= new HashMap<>();
 			String sqlType = e.getSqlType().toUpperCase();
 			String javaType = switch (sqlType) {
 			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
@@ -72,8 +78,17 @@ public class HandleGenerate {
 			case "BIGINT" -> "long";
 			case "BIT" -> "boolean";
 			case "DECIMAL" -> "double";
-			case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+			case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDate";
 			default -> "String"; // fallback
+			};
+			String type = switch (sqlType) {
+			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "text";
+			case "INT", "INT IDENTITY", "INTEGER" -> "number";
+			case "BIGINT" -> "number";
+			case "BIT" -> "text";
+			case "DECIMAL" -> "number";
+			case "DATE", "DATETIME", "TIMESTAMP" -> "date";
+			default -> "text"; // fallback
 			};
 			boolean isExistsKey = importedKeysInfosList.stream()
 					.anyMatch(keys -> keys.getFkColumn().equals(e.getName()));
@@ -89,11 +104,29 @@ public class HandleGenerate {
 			itemFeildsForDTOS.put("javaType", javaType);
 			itemFeildsForDTOS.put("columnName", e.getName());
 			itemFeildsForDTOS.put("fieldName", variableFeildName);
+			
+			if(!sqlType.equals("INT IDENTITY")){
+				if(variableFeildName.toUpperCase().contains("EMAIL") ) {
+					itemFeildsForFormFE.put("type", "email");
+				}else {
+					if(variableFeildName.toUpperCase().contains("PASSWORD")) {
+						
+					}
+					
+				}
+				itemFeildsForFormFE.put("type", type);
+				itemFeildsForFormFE.put("fieldName", variableFeildName);
+				fieldsForFromFE.add(itemFeildsForFormFE);
+			}
+
+
+			itemFeildsForReacticeObject.put("fieldName", variableFeildName);
 
 			itemFeildsForMapper.put("javaType", javaType);
 			itemFeildsForMapper.put("columnName", e.getName());
 
 			if (javaType.equals("boolean")) {
+				
 				itemFeildsForMapper.put("fieldName", "entity." + variableFeildName + "(),");
 			
 			} else {
@@ -106,6 +139,7 @@ public class HandleGenerate {
 
 			fieldsForMapper.add(itemFeildsForMapper);
 			fieldsForMapperToObject.add(itemFeildsForMapper);
+			fieldsForReacticeObject.add(itemFeildsForReacticeObject);
 		}
 		for (ForeignKeyInfo e : importedKeysInfosList) {
 			Map<String, String> itemForeignKeys = new HashMap<>();
@@ -144,7 +178,7 @@ public class HandleGenerate {
 		case "BIGINT" -> "long";
 		case "BIT" -> "boolean";
 		case "DECIMAL" -> "Double";
-		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDate";
 		default -> "String"; // fallback
 		};
 
@@ -178,6 +212,9 @@ public class HandleGenerate {
 		contextForMapper.put("fieldsmapperToObject", fieldsForMapperToObject);
 		contextForMapper.put("foreignService", foreignServiceForMapperToObject);
 
+		contextForFormFE.put("fieldsToDynamicFeild", fieldsForFromFE);
+		contextForFormFE.put("fields", fieldsForReacticeObject);
+		
 		String lowerClassName = commonFunction.ConvertToVariableName(connectInfo.getTblName());
 		contextForMapper.put("variableName", lowerClassName);
 
@@ -206,6 +243,19 @@ public class HandleGenerate {
 		try (Writer writer = new FileWriter(
 				conInfo.getBackEndSourceURL() + "/Mapper" + "/" + firstUpcaseClassName + "Mapper.java")) {
 			mustache.execute(writer, contextForMapper);
+		}
+		new File(conInfo.getFrontEndSourceURL() + "/src/components/Admin/"+firstUpcaseClassName).mkdirs(); // Tạo thư mục nếu chưa có
+		mf = new DefaultMustacheFactory();
+		mustache = mf.compile("TemplateToGenerate/FormModelFE.mustache");
+		try (Writer writer = new FileWriter(
+				conInfo.getFrontEndSourceURL() + "/src/components/Admin/"+firstUpcaseClassName + "/Form.vue")) {
+			mustache.execute(writer, contextForFormFE);
+		}
+		mf = new DefaultMustacheFactory();
+		mustache = mf.compile("TemplateToGenerate/adminIndex.mustache");
+		try (Writer writer = new FileWriter(
+				conInfo.getFrontEndSourceURL() + "/src/components/Admin/"+firstUpcaseClassName + "/index.vue")) {
+			mustache.execute(writer, contextForFormFEIndex);
 		}
 
 	}
@@ -243,7 +293,7 @@ public class HandleGenerate {
 		case "BIGINT" -> "long";
 		case "BIT" -> "boolean";
 		case "DECIMAL" -> "Double";
-		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDate";
 		default -> "String"; // fallback
 		};
 		context.put("idType", javaType);
@@ -276,7 +326,7 @@ public class HandleGenerate {
 		case "BIGINT" -> "long";
 		case "BIT" -> "boolean";
 		case "DECIMAL" -> "double";
-		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDate";
 		default -> "String"; // fallback
 		};
 		context.put("idType", idType);

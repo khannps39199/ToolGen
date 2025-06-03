@@ -125,7 +125,7 @@ public class ToolAutoGenSiteController {
 		} else {
 
 			List<String> listtBL = getAllTables.getAllTableNames();
-//			handelGen.handleGenerateAdminRouter(listtBL, conInfo);
+			handelGen.handleGenerateAdminRouter(listtBL, conInfo);
 			for (String tableItem : listtBL) {
 				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, tableItem);
 				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, tableItem);

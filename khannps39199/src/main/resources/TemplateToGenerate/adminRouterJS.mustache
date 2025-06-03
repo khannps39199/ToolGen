@@ -1,34 +1,30 @@
-import ModuleQuanLy from '../../components/Admin/ModuleQuanLy.vue'
+
 const listDashBoard = [
 {{#fields}}
     "{{className}}",
 {{/fields}}
 ]
-
 export default [
-
-{{#fields}}  {
+{{#fields}}  
+	{
         path: '/Admin/{{className}}',
-        component: ModuleQuanLy,
-        props: { id: "-1", TableName: '{{className}}', isEditing: false, listDashBoard: listDashBoard }
+        component: import('../../components/Admin/{{className}}/index.vue'),
+        props: route => ({ TableName: '{{className}}'})
+    },
+    {
+        path: '/Admin/{{className}}/create',
+        component:  () => import('../../components/Admin/{{className}}/Form.vue'),
+        props: route => ({ TableName: '{{className}}', action: 'create'})
     },
     {
         path: '/Admin/{{className}}/view/:id',
-        component: ModuleQuanLy,
-        props: route => ({ id: route.params.id, action: 'view', TableName: '{{className}}', isEditing: false, listDashBoard: listDashBoard })
+        component:  () => import('../../components/Admin/{{className}}/Form.vue'),
+        props: route => ({ TableName: '{{className}}', action: 'view', id: route.params.id,})
     },
     {
         path: '/Admin/{{className}}/update/:id',
-        component: ModuleQuanLy,
-        props: route => ({ id: route.params.id, action: 'update', TableName: '{{className}}', isEditing: true, listDashBoard: listDashBoard })
-    },
-    {
-        path: '/Admin/{{className}}/delete/:id',
-        component: ModuleQuanLy,
-        props: route => ({ id: route.params.id, action: 'delete', TableName: '{{className}}', isEditing: false, listDashBoard: listDashBoard })
+        component:  () => import('../../components/Admin/{{className}}/Form.vue'),
+        props: route => ({ TableName: '{{className}}', action: 'update', id: route.params.id,})
     },
 {{/fields}}
-
-  
-    
 ]
