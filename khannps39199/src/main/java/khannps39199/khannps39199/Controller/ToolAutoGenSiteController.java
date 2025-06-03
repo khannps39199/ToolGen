@@ -123,14 +123,12 @@ public class ToolAutoGenSiteController {
 			// Define Repository To Service
 			handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
 		} else {
-
 			List<String> listtBL = getAllTables.getAllTableNames();
 			handelGen.handleGenerateAdminRouter(listtBL, conInfo);
 			for (String tableItem : listtBL) {
 				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, tableItem);
 				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, tableItem);
 				connectInfo.setTblName(tableItem);
-
 				listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
 				handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 						ExportedKeysInfos);

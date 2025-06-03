@@ -61,16 +61,14 @@ public class HandleGenerate {
 		List<Map<String, String>> fieldsForReacticeObject = new ArrayList<>();
 		List<Map<String, String>> foreignKeys = new ArrayList<>();
 		List<Map<String, String>> foreignKeysForDTOS = new ArrayList<>();
-		List<Map<String, String>> foreignKeysForMapper = new ArrayList<>();
 		List<Map<String, String>> foreignServiceForMapperToObject = new ArrayList<>();
 		List<Map<String, String>> exportKeys = new ArrayList<>();
 		for (ColumnInfo e : listtBLColumn) {
 			Map<String, String> itemFeilds = new HashMap<>();
 			Map<String, String> itemFeildsForDTOS = new HashMap<>();
 			Map<String, String> itemFeildsForMapper = new HashMap<>();
-			Map<String, String> itemFeildsForMapperToObject = new HashMap<>();
 			Map<String, String> itemFeildsForFormFE = new HashMap<>();
-			Map<String, String> itemFeildsForReacticeObject= new HashMap<>();
+			Map<String, String> itemFeildsForReacticeObject = new HashMap<>();
 			String sqlType = e.getSqlType().toUpperCase();
 			String javaType = switch (sqlType) {
 			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
@@ -95,48 +93,42 @@ public class HandleGenerate {
 			if (isExistsKey) {
 				continue;
 			}
-
 			String variableFeildName = commonFunction.firstLowCase(commonFunction.ConvertToClassName(e.getName()));
 			itemFeilds.put("javaType", javaType);
 			itemFeilds.put("columnName", e.getName());
 			itemFeilds.put("fieldName", variableFeildName);
-
 			itemFeildsForDTOS.put("javaType", javaType);
 			itemFeildsForDTOS.put("columnName", e.getName());
 			itemFeildsForDTOS.put("fieldName", variableFeildName);
-			
-			if(!sqlType.equals("INT IDENTITY")){
-				if(variableFeildName.toUpperCase().contains("EMAIL") ) {
+			if (!sqlType.equals("INT IDENTITY")) {
+				if (variableFeildName.toUpperCase().contains("EMAIL")) {
 					itemFeildsForFormFE.put("type", "email");
-				}else {
-					if(variableFeildName.toUpperCase().contains("PASSWORD")) {
-						
+					itemFeildsForFormFE.put("fieldName", variableFeildName);
+					fieldsForFromFE.add(itemFeildsForFormFE);
+				} else {
+					if (variableFeildName.toUpperCase().contains("PASSWORD")) {
+						itemFeildsForFormFE.put("type", "password");
+						itemFeildsForFormFE.put("fieldName", variableFeildName);
+						fieldsForFromFE.add(itemFeildsForFormFE);
+
+					} else {
+						itemFeildsForFormFE.put("type", type);
+						itemFeildsForFormFE.put("fieldName", variableFeildName);
+						fieldsForFromFE.add(itemFeildsForFormFE);
 					}
-					
 				}
-				itemFeildsForFormFE.put("type", type);
-				itemFeildsForFormFE.put("fieldName", variableFeildName);
-				fieldsForFromFE.add(itemFeildsForFormFE);
 			}
-
-
 			itemFeildsForReacticeObject.put("fieldName", variableFeildName);
-
 			itemFeildsForMapper.put("javaType", javaType);
 			itemFeildsForMapper.put("columnName", e.getName());
-
 			if (javaType.equals("boolean")) {
-				
 				itemFeildsForMapper.put("fieldName", "entity." + variableFeildName + "(),");
-			
 			} else {
 				itemFeildsForMapper.put("fieldName",
 						"entity.get" + commonFunction.ConvertToClassName(e.getName()) + "(),");
 			}
-
 			fields.add(itemFeilds);
 			fieldsForDTOS.add(itemFeildsForDTOS);
-
 			fieldsForMapper.add(itemFeildsForMapper);
 			fieldsForMapperToObject.add(itemFeildsForMapper);
 			fieldsForReacticeObject.add(itemFeildsForReacticeObject);
@@ -155,23 +147,18 @@ public class HandleGenerate {
 			itemForeignKeysForDTOS.put("fkColumnName", e.getFkColumn());
 			itemForeignKeysForDTOS.put("pkClassName", firstUpcaseClassNameImportKey);
 			itemForeignKeysForDTOS.put("camelFieldName", variableCamelFieldName);
-
-			itemForeignKeysForMapper.put("fieldName","entity.get"  + firstUpcaseClassNameImportKey + "().getId(),");
+			itemForeignKeysForMapper.put("fieldName", "entity.get" + firstUpcaseClassNameImportKey + "().getId(),");
 			itemForeignKeysForMapperToObject.put("fieldName",
 					variableCamelFieldName + "Service." + variableCamelFieldName + "FindById(entity.get"
 							+ firstUpcaseClassNameImportKey + "()).orElse(null),");
-
 			itemForeignServiceForMapperToObject.put("classNameService", firstUpcaseClassNameImportKey);
 			itemForeignServiceForMapperToObject.put("variableNameService", variableCamelFieldName);
-
 			foreignKeys.add(itemForeignKeys);
 			foreignKeysForDTOS.add(itemForeignKeysForDTOS);
-
 			fieldsForMapper.add(itemForeignKeysForMapper);
 			fieldsForMapperToObject.add(itemForeignKeysForMapperToObject);
 			foreignServiceForMapperToObject.add(itemForeignServiceForMapperToObject);
 		}
-
 		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
 		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
 		case "INT", "INT IDENTITY", "INTEGER" -> "int";
@@ -181,46 +168,35 @@ public class HandleGenerate {
 		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDate";
 		default -> "String"; // fallback
 		};
-
 		Map<String, String> handleLastComa = fieldsForMapper.get(fieldsForMapper.size() - 1);
 		String lastField = handleLastComa.get("fieldName");
-		if(!lastField.substring(lastField.length() - 1).contains(")")) {
+		if (!lastField.substring(lastField.length() - 1).contains(")")) {
 			lastField = lastField.substring(0, lastField.length() - 1);
 			handleLastComa.put("fieldName", lastField);
 			fieldsForMapper.set(fieldsForMapper.size() - 1, handleLastComa);
 		}
-	
-
 		Map<String, String> handleLastComaForMapperToObject = fieldsForMapperToObject
 				.get(fieldsForMapperToObject.size() - 1);
 		String lastFieldForMapperToObject = handleLastComaForMapperToObject.get("fieldName");
-		if(!lastFieldForMapperToObject.substring(lastFieldForMapperToObject.length() - 1).contains(")")) {
-			lastFieldForMapperToObject = lastFieldForMapperToObject.substring(0, lastFieldForMapperToObject.length() - 1);
+		if (!lastFieldForMapperToObject.substring(lastFieldForMapperToObject.length() - 1).contains(")")) {
+			lastFieldForMapperToObject = lastFieldForMapperToObject.substring(0,
+					lastFieldForMapperToObject.length() - 1);
 			handleLastComaForMapperToObject.put("fieldName", lastFieldForMapperToObject);
 			fieldsForMapperToObject.set(fieldsForMapperToObject.size() - 1, handleLastComaForMapperToObject);
 		}
-		
-		
-
 		context.put("isInteger", idType.equals("int") ? "@GeneratedValue(strategy = GenerationType.IDENTITY)" : "");
 		context.put("exportKeys", exportKeys);
 		context.put("fields", fields);
-
 		contextForDTOS.put("fields", fieldsForDTOS);
 		contextForMapper.put("fields", fieldsForMapper);
-
 		contextForMapper.put("fieldsmapperToObject", fieldsForMapperToObject);
 		contextForMapper.put("foreignService", foreignServiceForMapperToObject);
-
 		contextForFormFE.put("fieldsToDynamicFeild", fieldsForFromFE);
 		contextForFormFE.put("fields", fieldsForReacticeObject);
-		
 		String lowerClassName = commonFunction.ConvertToVariableName(connectInfo.getTblName());
 		contextForMapper.put("variableName", lowerClassName);
-
 		context.put("foreignKeys", foreignKeys);
 		contextForDTOS.put("foreignKeys", foreignKeysForDTOS);
-
 		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
 		MustacheFactory mf = new DefaultMustacheFactory();
 		Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
@@ -228,7 +204,6 @@ public class HandleGenerate {
 				conInfo.getBackEndSourceURL() + "/Entity" + "/" + firstUpcaseClassName + ".java")) {
 			mustache.execute(writer, context);
 		}
-
 		new File(conInfo.getBackEndSourceURL() + "/DTOS").mkdirs(); // Tạo thư mục nếu chưa có
 		mf = new DefaultMustacheFactory();
 		mustache = mf.compile("TemplateToGenerate/DTOS.mustache");
@@ -236,7 +211,6 @@ public class HandleGenerate {
 				conInfo.getBackEndSourceURL() + "/DTOS" + "/" + firstUpcaseClassName + "DTOS.java")) {
 			mustache.execute(writer, contextForDTOS);
 		}
-
 		new File(conInfo.getBackEndSourceURL() + "/Mapper").mkdirs(); // Tạo thư mục nếu chưa có
 		mf = new DefaultMustacheFactory();
 		mustache = mf.compile("TemplateToGenerate/Mapper.mustache");
@@ -244,20 +218,19 @@ public class HandleGenerate {
 				conInfo.getBackEndSourceURL() + "/Mapper" + "/" + firstUpcaseClassName + "Mapper.java")) {
 			mustache.execute(writer, contextForMapper);
 		}
-		new File(conInfo.getFrontEndSourceURL() + "/src/components/Admin/"+firstUpcaseClassName).mkdirs(); // Tạo thư mục nếu chưa có
+		new File(conInfo.getFrontEndSourceURL() + "/src/components/Admin/" + firstUpcaseClassName).mkdirs();
 		mf = new DefaultMustacheFactory();
 		mustache = mf.compile("TemplateToGenerate/FormModelFE.mustache");
 		try (Writer writer = new FileWriter(
-				conInfo.getFrontEndSourceURL() + "/src/components/Admin/"+firstUpcaseClassName + "/Form.vue")) {
+				conInfo.getFrontEndSourceURL() + "/src/components/Admin/" + firstUpcaseClassName + "/Form.vue")) {
 			mustache.execute(writer, contextForFormFE);
 		}
 		mf = new DefaultMustacheFactory();
 		mustache = mf.compile("TemplateToGenerate/adminIndex.mustache");
 		try (Writer writer = new FileWriter(
-				conInfo.getFrontEndSourceURL() + "/src/components/Admin/"+firstUpcaseClassName + "/index.vue")) {
+				conInfo.getFrontEndSourceURL() + "/src/components/Admin/" + firstUpcaseClassName + "/index.vue")) {
 			mustache.execute(writer, contextForFormFEIndex);
 		}
-
 	}
 
 	public void handleGenerateAdminRouter(List<String> listtBL, ConnectInfo conInfo) throws SQLException, IOException {
@@ -304,12 +277,10 @@ public class HandleGenerate {
 				conInfo.getBackEndSourceURL() + "/Repository" + "/" + firstUpcaseClassName + "Repository.java")) {
 			mustache.execute(writer, context);
 		}
-
 	}
 
 	public int HandleDefineRepositoryToService(ConnectInfo connectInfo, List<String> packageNameSplit,
 			List<ColumnInfo> listtBLColumn, ConnectInfo conInfo) throws SQLException, IOException {
-		boolean isUpdate = false;
 		String firstUpcaseClassName = commonFunction.ConvertToClassName(connectInfo.getTblName());
 		String lowerClassName = commonFunction.ConvertToVariableName(connectInfo.getTblName());
 		Map<String, Object> context = new HashMap<>();
@@ -351,5 +322,4 @@ public class HandleGenerate {
 		}
 		return 0;
 	}
-
 }
