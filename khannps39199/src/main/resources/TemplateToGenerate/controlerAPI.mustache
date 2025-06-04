@@ -27,7 +27,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 public class {{Classname}}API {
 	@Autowired
 	private {{Classname}}Service {{variableName}}Service;
-	private {{Classname}}Mapper {{variableName}}Mapper=new {{Classname}}Mapper();
+	
+	@Autowired
+	private {{Classname}}Mapper {{variableName}}Mapper;
 
 	@GetMapping("/{{Classname}}")
 	public ResponseEntity<List<{{Classname}}DTOS>> getAll{{Classname}}Api(	
