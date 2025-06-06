@@ -124,7 +124,7 @@ public class ToolAutoGenSiteController {
 			handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
 		} else {
 			List<String> listtBL = getAllTables.getAllTableNames();
-			handelGen.handleGenerateAdminRouter(listtBL, conInfo);
+//			handelGen.handleGenerateAdminRouter(listtBL, conInfo);
 			for (String tableItem : listtBL) {
 				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, tableItem);
 				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, tableItem);
@@ -132,8 +132,8 @@ public class ToolAutoGenSiteController {
 				listtBLColumn = getAllTables.getTableColumns(connectInfo.getTblName());
 				handelGen.HandleGenerateEntity(connectInfo, packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 						ExportedKeysInfos);
-				handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
-				handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+//				handelGen.HandleGenerateRepository(connectInfo, packageNameSplit, listtBLColumn, conInfo);
+//				handelGen.HandleDefineRepositoryToService(connectInfo, packageNameSplit, listtBLColumn, conInfo);
 			}
 		}
 		List<String> listDB = getAllTables.getAllDatabases();

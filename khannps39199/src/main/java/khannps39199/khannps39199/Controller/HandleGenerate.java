@@ -4,9 +4,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -76,7 +73,7 @@ public class HandleGenerate {
 			case "BIGINT" -> "long";
 			case "BIT" -> "boolean";
 			case "DECIMAL" -> "double";
-			case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDate";
+			case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
 			default -> "String"; // fallback
 			};
 			String type = switch (sqlType) {
@@ -97,6 +94,10 @@ public class HandleGenerate {
 			itemFeilds.put("javaType", javaType);
 			itemFeilds.put("columnName", e.getName());
 			itemFeilds.put("fieldName", variableFeildName);
+
+			itemFeilds.put("isCreUp", variableFeildName.contains("create") ? "@CreationTimestamp"
+					: (variableFeildName.contains("update") ? "@UpdateTimestamp" : ""));
+
 			itemFeildsForDTOS.put("javaType", javaType);
 			itemFeildsForDTOS.put("columnName", e.getName());
 			itemFeildsForDTOS.put("fieldName", variableFeildName);
@@ -165,7 +166,7 @@ public class HandleGenerate {
 		case "BIGINT" -> "long";
 		case "BIT" -> "boolean";
 		case "DECIMAL" -> "Double";
-		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDate";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
 		default -> "String"; // fallback
 		};
 		Map<String, String> handleLastComa = fieldsForMapper.get(fieldsForMapper.size() - 1);
@@ -185,6 +186,7 @@ public class HandleGenerate {
 			fieldsForMapperToObject.set(fieldsForMapperToObject.size() - 1, handleLastComaForMapperToObject);
 		}
 		context.put("isInteger", idType.equals("int") ? "@GeneratedValue(strategy = GenerationType.IDENTITY)" : "");
+
 		context.put("exportKeys", exportKeys);
 		context.put("fields", fields);
 		contextForDTOS.put("fields", fieldsForDTOS);
@@ -266,7 +268,7 @@ public class HandleGenerate {
 		case "BIGINT" -> "long";
 		case "BIT" -> "boolean";
 		case "DECIMAL" -> "Double";
-		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDate";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
 		default -> "String"; // fallback
 		};
 		context.put("idType", javaType);
@@ -297,7 +299,7 @@ public class HandleGenerate {
 		case "BIGINT" -> "long";
 		case "BIT" -> "boolean";
 		case "DECIMAL" -> "double";
-		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDate";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
 		default -> "String"; // fallback
 		};
 		context.put("idType", idType);

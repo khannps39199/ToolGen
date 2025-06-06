@@ -7,24 +7,24 @@ const listDashBoard = [
 export default [
 {{#fields}}  
 	{
-        path: '/Admin/{{className}}',
+        path: '/{{className}}',
         component: import('../../components/Admin/{{className}}/index.vue'),
-        props: route => ({ TableName: '{{className}}'})
+        props: route => ({ TableName: '{{className}}'}), meta: { requiresAuth: true , requiresRoles : ['ADMIN']}
     },
     {
-        path: '/Admin/{{className}}/create',
+        path: '/{{className}}/create',
         component:  () => import('../../components/Admin/{{className}}/Form.vue'),
-        props: route => ({ TableName: '{{className}}', action: 'create'})
+        props: route => ({ TableName: '{{className}}', action: 'create'}), meta: { requiresAuth: true , requiresRoles : ['ADMIN']}
     },
     {
-        path: '/Admin/{{className}}/view/:id',
+        path: '/{{className}}/view/:id',
         component:  () => import('../../components/Admin/{{className}}/Form.vue'),
-        props: route => ({ TableName: '{{className}}', action: 'view', id: route.params.id,})
+        props: route => ({ TableName: '{{className}}', action: 'view', id: route.params.id,}), meta: { requiresAuth: true , requiresRoles : ['ADMIN']}
     },
     {
-        path: '/Admin/{{className}}/update/:id',
+        path: '/{{className}}/update/:id',
         component:  () => import('../../components/Admin/{{className}}/Form.vue'),
-        props: route => ({ TableName: '{{className}}', action: 'update', id: route.params.id,})
+        props: route => ({ TableName: '{{className}}', action: 'update', id: route.params.id,}), meta: { requiresAuth: true , requiresRoles : ['ADMIN']}
     },
 {{/fields}}
 ]
