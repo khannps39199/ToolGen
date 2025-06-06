@@ -1,14 +1,18 @@
-![image](https://github.com/user-attachments/assets/deb35802-0975-4067-ba39-6abd14a0e135)  
-Nhấp connect mà không cần nhập gì  
-![image](https://github.com/user-attachments/assets/7e2da8bb-d720-44ef-bd6e-9362b0e06e63)  
-Nhập Username password database nhấn select Another DB 
-![image](https://github.com/user-attachments/assets/90bd5da8-09d4-4eb2-a4a2-c262bc50e453)  
-Chọn database muốn reconnect để lấy các bảng generate  
-![image](https://github.com/user-attachments/assets/07fa23fc-db14-442c-8420-9b6aa2332008)  
-chọn Generate All Entity hằng có thể chọn các bảng tùy chọn 
-nhập URL path muốn generate  
-nhập URL path front end muốn generate  admin router, admin CRUD  
-nhấn select  
-Luu ý nhấn select Another DB mỗi lần chỉnh bảng do Connection được làm mới mỗi request  
+![image](https://github.com/user-attachments/assets/331c662f-0149-4929-b4ce-4bd947cbc9e6)  
+Nhập USERNAME,PASSWORD SSMS nhập URL BACKEND SOURCES  
+(chú ý URL dẫn đến vị trí cần đặt Entity,Repository,.. )  
+nhấn SELECT để connect lần đầu và lấy tất các DATABASE  
+![image](https://github.com/user-attachments/assets/f1ddd12e-ba21-483e-a745-d6791c4d76c1)  
+![image](https://github.com/user-attachments/assets/15ea5fb8-c97b-461f-a07d-9e4e436ff401)  
+chọn bảng cần Gen hoặc mặc định là GEN TẤT CẢ  
+nhất SELECT để cập nhật CONNECTINFOHOLDER  
+![image](https://github.com/user-attachments/assets/e694aa9b-c91e-4748-a2ce-f04875b0034d)
+chọn các chức năng tương ứng với tên nút
 
-thêm mới tự generate ControllerAPI Lưu úy mới tự generate cho Api/Admin
+
+
+
+
+
+
+
