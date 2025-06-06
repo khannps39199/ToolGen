@@ -1,9 +1,9 @@
 <template>
 
     <body>
-        <div class="container mt-5">
+        <div class="container-xxl mt-5">
             <div class="row justify-content-center">
-                <div class="col-md-6">
+                <div class="col-xxl-6">
                     <div class="card shadow">
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0">Connect to SQL</h5>
@@ -69,7 +69,6 @@
                                 <button @click="HandelGenControllerAPIBasic"
                                     class="btn btn-info col-2">ControllerAPI</button>
                             </div>
-
                             <div class="row mt-2">
                                 <button @click="HandleGenIndex" class="btn btn-dark col-4">Generate Index</button>
                                 <button @click="HandleGenAdminRouter" class="btn btn-warning col-4">
@@ -78,7 +77,6 @@
                                 <button @click="HandleGenForm" class="btn btn-light text-dark col-4">Generate
                                     Form</button>
                             </div>
-
                         </div>
                     </div>
                 </div>
