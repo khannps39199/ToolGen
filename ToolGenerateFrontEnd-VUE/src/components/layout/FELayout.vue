@@ -60,25 +60,25 @@
                                 </div>
                             </form>
                             <div class="row mt-2">
-                                <button @click="handelGenEntity" class="btn btn-success  col-2">
-                                    Entity
-                                </button>
-                                <button @click="handelGenDTOS" class="btn btn-success  col-2">
-                                    DTOS
-                                </button>
-                                <button @click="handelGenMapper" class="btn btn-success  col-2">
-                                    handelGenMapper
-                                </button>
-                                <button @click="handelGenRepository" class="btn btn-success  col-2">
-                                    Repository
-                                </button>
-                                <button @click="handelGenDefineRepositoryToService" class="btn btn-success  col-2">
-                                    DefineRepositoryToService
-                                </button>
-                                <button @click="handelGenControllerAPIBasic" class="btn btn-success  col-2">
-                                    ControllerAPIBasic
-                                </button>
+                                <button @click="HandelGenEntity" class="btn btn-primary col-2">Entity</button>
+                                <button @click="HandelGenDTOS" class="btn btn-secondary col-2">DTOS</button>
+                                <button @click="HandelGenMapper" class="btn btn-success col-2">Mapper</button>
+                                <button @click="HandelGenRepository" class="btn btn-danger col-2">Repository</button>
+                                <button @click="HandelGenDefineRepositoryToService"
+                                    class="btn btn-warning col-2">DefineRepoToService</button>
+                                <button @click="HandelGenControllerAPIBasic"
+                                    class="btn btn-info col-2">ControllerAPI</button>
                             </div>
+
+                            <div class="row mt-2">
+                                <button @click="HandleGenIndex" class="btn btn-dark col-4">Generate Index</button>
+                                <button @click="HandleGenAdminRouter" class="btn btn-warning col-4">
+                                    Generate AdminRouter
+                                </button>
+                                <button @click="HandleGenForm" class="btn btn-light text-dark col-4">Generate
+                                    Form</button>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -105,18 +105,37 @@ async function handleConnect() {
     listDB.value = await GenService.setConnect(model)
     console.log(model.dbName)
 }
-async function handelGenEntity() {
+async function HandelGenEntity() {
+    await GenService.HandelGenEntity()
 }
-async function handelGenDTOS() {
+async function HandelGenDTOS() {
+    await GenService.HandelGenDTOS()
 }
-async function handelGenMapper() {
+async function HandelGenMapper() {
+    await GenService.HandelGenMapper()
 }
-async function handelGenRepository() {
+async function HandelGenRepository() {
+    await GenService.HandelGenRepository()
 }
-async function handelGenDefineRepositoryToService() {
+async function HandelGenDefineRepositoryToService() {
+    await GenService.HandelGenDefineRepositoryToService()
 }
-async function handelGenControllerAPIBasic() {
+async function HandelGenControllerAPIBasic() {
+    await GenService.HandelGenControllerAPIBasic()
 }
+async function HandleGenAdminRouter() {
+    await GenService.HandleGenAdminRouter()
+}
+async function HandleGenIndex() {
+    await GenService.HandleGenIndex()
+}
+async function HandleGenForm() {
+    await GenService.HandleGenForm()
+}
+
+
+
+
 
 watch(() => model.dbName, async () => {
     listtBL.value = await GenService.getTableName(model.dbName)

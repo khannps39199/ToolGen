@@ -47,15 +47,14 @@ public class RestAPI {
 		ds.setPassword(connectInfoDTOS.getPassword());
 //		ds.setTrustServerCertificate(true);
 		ds.setEncrypt(true);
-		System.out.println(connectInfoHolder.getConnectInfo());
 		ds.setTrustServerCertificate(true);
 		connectInfoHolder.setConnectInfo(new ConnectInfo(connectInfoDTOS.getUserName(), connectInfoDTOS.getPassword(),
 				connectInfoDTOS.getDbName(), connectInfoDTOS.getTblName() != null ? connectInfoDTOS.getTblName() : "",
 				connectInfoDTOS.getBackEndSourceURL() != null ? connectInfoDTOS.getBackEndSourceURL() : "",
 				connectInfoDTOS.getFrontEndSourceURL() != null ? connectInfoDTOS.getFrontEndSourceURL() : "",
 				new ForeignKeyInfo()));
-
 		List<String> listDB = getAllTables.getAllDatabases();
+		System.out.println(connectInfoHolder.getConnectInfo());
 		return ResponseEntity.ok(listDB);
 	}
 
@@ -67,15 +66,15 @@ public class RestAPI {
 
 	@GetMapping("/GetAllTableName/{dbName}")
 	public ResponseEntity<List<String>> getAllTableName(@PathVariable String dbName) {
-		System.out.println(dbName);
 		ds.setDatabaseName(dbName);
 		ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+		conInfo.setDbName(dbName);
 		connectInfoHolder.setConnectInfo(conInfo);
 		List<String> listtBL = getAllTables.getAllTableNames();
 		return ResponseEntity.ok(listtBL);
 	}
 
-	@GetMapping("/handelGenEntity")
+	@GetMapping("/HandelGenEntity")
 	public ResponseEntity<?> handelGenEntity() {
 		try {
 			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
@@ -105,7 +104,7 @@ public class RestAPI {
 		}
 	}
 
-	@GetMapping("/handelGenDTOS")
+	@GetMapping("/HandelGenDTOS")
 	public ResponseEntity<?> handelGenDTOS() {
 		try {
 			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
@@ -135,7 +134,7 @@ public class RestAPI {
 
 	}
 
-	@GetMapping("/handelGenMapper")
+	@GetMapping("/HandelGenMapper")
 	public ResponseEntity<?> handelGenMapper() {
 		try {
 			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
@@ -164,7 +163,7 @@ public class RestAPI {
 		}
 	}
 
-	@GetMapping("/handleGenRepository")
+	@GetMapping("/HandleGenRepository")
 	public ResponseEntity<?> handleGenRepository() {
 		try {
 			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
@@ -187,7 +186,7 @@ public class RestAPI {
 		}
 	}
 
-	@GetMapping("/handelGenDefineRepositoryToService")
+	@GetMapping("/HandelGenDefineRepositoryToService")
 	public ResponseEntity<?> handelGenDefineRepositoryToService() {
 		try {
 			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
@@ -214,7 +213,7 @@ public class RestAPI {
 		}
 	}
 
-	@GetMapping("/handelGenControllerAPIBasic")
+	@GetMapping("/HandelGenControllerAPIBasic")
 	public ResponseEntity<?> handelGenControllerAPIBasic() {
 		try {
 			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
@@ -237,7 +236,7 @@ public class RestAPI {
 		}
 	}
 
-	@GetMapping("/handleGenAdminRouter")
+	@GetMapping("/HandleGenAdminRouter")
 	public ResponseEntity<?> handleGenAdminRouter() {
 		try {
 			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();

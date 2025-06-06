@@ -55,7 +55,10 @@ public class HandleGenerateForAPI {
 			}
 			String variableFeildName = commonFunction.firstLowCase(commonFunction.ConvertToClassName(e.getName()));
 			itemFeilds.put("javaType", javaType);
-			itemFeilds.put("columnName", e.getName());
+			String resultTosetUpdatable = !variableFeildName.contains("create") ? (e.getName().concat("\""))
+					: (e.getName().concat("\",updatable = false"));
+
+			itemFeilds.put("columnName", resultTosetUpdatable);
 			itemFeilds.put("fieldName", variableFeildName);
 			itemFeilds.put("isCreUp", variableFeildName.contains("create") ? "@CreationTimestamp"
 					: (variableFeildName.contains("update") ? "@UpdateTimestamp" : ""));

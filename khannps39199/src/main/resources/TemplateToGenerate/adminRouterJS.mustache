@@ -7,22 +7,22 @@ const listDashBoard = [
 export default [
 {{#fields}}  
 	{
-        path: '/{{className}}',
+        path: '{{className}}',
         component: import('../../components/Admin/{{className}}/index.vue'),
         props: route => ({ TableName: '{{className}}'}), meta: { requiresAuth: true , requiresRoles : ['ADMIN']}
     },
     {
-        path: '/{{className}}/create',
+        path: '{{className}}/create',
         component:  () => import('../../components/Admin/{{className}}/Form.vue'),
         props: route => ({ TableName: '{{className}}', action: 'create'}), meta: { requiresAuth: true , requiresRoles : ['ADMIN']}
     },
     {
-        path: '/{{className}}/view/:id',
+        path: '{{className}}/view/:id',
         component:  () => import('../../components/Admin/{{className}}/Form.vue'),
         props: route => ({ TableName: '{{className}}', action: 'view', id: route.params.id,}), meta: { requiresAuth: true , requiresRoles : ['ADMIN']}
     },
     {
-        path: '/{{className}}/update/:id',
+        path: '{{className}}/update/:id',
         component:  () => import('../../components/Admin/{{className}}/Form.vue'),
         props: route => ({ TableName: '{{className}}', action: 'update', id: route.params.id,}), meta: { requiresAuth: true , requiresRoles : ['ADMIN']}
     },
