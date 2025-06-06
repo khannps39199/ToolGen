@@ -1,10 +1,8 @@
-
-
 <template>
- <FELayout></FELayout>
+    <FELayout></FELayout>
 </template>
 <script setup>
-import FELayout from '../layout/FELayout.vue';
+import FELayout from './components/layout/FELayout.vue';
 </script>
 <style scoped>
 
