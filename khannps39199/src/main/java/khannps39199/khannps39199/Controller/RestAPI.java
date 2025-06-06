@@ -163,7 +163,7 @@ public class RestAPI {
 		}
 	}
 
-	@GetMapping("/HandleGenRepository")
+	@GetMapping("/HandelGenRepository")
 	public ResponseEntity<?> handleGenRepository() {
 		try {
 			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
