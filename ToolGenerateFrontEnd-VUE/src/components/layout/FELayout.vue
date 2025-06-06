@@ -133,10 +133,6 @@ async function HandleGenForm() {
     await GenService.HandleGenForm()
 }
 
-
-
-
-
 watch(() => model.dbName, async () => {
     listtBL.value = await GenService.getTableName(model.dbName)
 })
