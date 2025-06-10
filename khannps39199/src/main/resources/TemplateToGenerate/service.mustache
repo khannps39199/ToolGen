@@ -3,12 +3,13 @@ package {{packageName}}.Service;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.aos.AOSBE.Entity.*;
-import com.aos.AOSBE.Repository.*;
+import {{packageName}}.Entity.*;
+import {{packageName}}.Repository.*;
 import java.util.*;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 @Service
 public class {{className}}Service {
 	@Autowired
@@ -18,12 +19,14 @@ public class {{className}}Service {
     	Pageable pageable = PageRequest.of(page, size);
 		return {{variableClassName}}Repository.findAll(pageable).getContent();
     }
+    @Transactional
     public {{className}} {{variableClassName}}Save({{className}} {{variableClassName}}) {
         return {{variableClassName}}Repository.save({{variableClassName}});
     }
     public Optional<{{className}}> {{variableClassName}}FindById({{idType}} id) {
         return {{variableClassName}}Repository.findById(id);
     }
+    @Transactional
     public void {{variableClassName}}DeleteById({{idType}} id) {
         {{variableClassName}}Repository.deleteById(id);
     }

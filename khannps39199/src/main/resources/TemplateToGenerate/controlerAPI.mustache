@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.data.domain.PageRequest;
-import com.aos.AOSBE.Entity.*;
-import com.aos.AOSBE.Service.*;
-import com.aos.AOSBE.DTOS.*;
-import com.aos.AOSBE.Mapper.*;
+import {{packageName}}.Entity.*;
+import {{packageName}}.Service.*;
+import {{packageName}}.DTOS.*;
+import {{packageName}}.Mapper.*;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,6 +45,10 @@ public class {{Classname}}API {
 
 	@GetMapping("/{{Classname}}/{id}")
 	public ResponseEntity<{{Classname}}> get{{Classname}}ByIdApi(@PathVariable int id) {
+		//try{
+		//}catch(Exception e){
+		//}
+		
 		{{Classname}} {{variableName}} =({{Classname}}){{variableName}}Service.{{variableName}}FindById(id).orElse(new {{Classname}}());
 		return ResponseEntity.ok({{variableName}});
 	}
@@ -54,7 +58,6 @@ public class {{Classname}}API {
 	    {{Classname}} saved = {{variableName}}Service.{{variableName}}Save({{variableName}}Mapper.mapperToObject(entity));	    
 	    return ResponseEntity.ok(saved);
 	}
-
 	@PutMapping("/{{Classname}}")
 	public ResponseEntity<{{Classname}}> update{{Classname}}(@RequestBody {{Classname}} entity) {
 	    {{Classname}} updated = {{variableName}}Service.{{variableName}}Save(entity); 

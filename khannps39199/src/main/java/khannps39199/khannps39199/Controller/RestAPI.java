@@ -96,6 +96,7 @@ public class RestAPI {
 					handelGen.HandleGenerateEntity(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 							ExportedKeysInfos);
 				}
+				conInfo.setTblName("All");
 			}
 			return ResponseEntity.ok("Entity generation successful.");
 		} catch (Exception e) {
@@ -125,6 +126,7 @@ public class RestAPI {
 					handelGen.HandleGenerateDTOS(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 							ExportedKeysInfos);
 				}
+				conInfo.setTblName("All");
 			}
 			return ResponseEntity.ok("handelGenDTOS successful.");
 		} catch (Exception e) {
@@ -141,6 +143,7 @@ public class RestAPI {
 			List<ColumnInfo> listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
 			List<String> packageNameSplit = Arrays.asList(conInfo.getBackEndSourceURL().split("\\\\"));
 			if (!conInfo.getTblName().equals("All")) {
+				System.out.println(conInfo.getTblName());
 				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, conInfo.getTblName());
 				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, conInfo.getTblName());
 				handelGen.HandleGenerateMapper(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
@@ -155,8 +158,9 @@ public class RestAPI {
 					handelGen.HandleGenerateMapper(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 							ExportedKeysInfos);
 				}
+				conInfo.setTblName("All");
 			}
-			return ResponseEntity.ok("handelGenMapper successful.");
+			return ResponseEntity.ok("handelGenMapper successful." + conInfo.getTblName());
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("handelGenMapper failed: " + e.getMessage());
@@ -178,6 +182,7 @@ public class RestAPI {
 					listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
 					handelGen.HandleGenerateRepository(packageNameSplit, listtBLColumn, conInfo);
 				}
+				conInfo.setTblName("All");
 			}
 			return ResponseEntity.ok("handleGenRepository successful.");
 		} catch (Exception e) {
@@ -205,6 +210,7 @@ public class RestAPI {
 					listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
 					handelGen.HandleDefineRepositoryToService(packageNameSplit, listtBLColumn, conInfo);
 				}
+				conInfo.setTblName("All");
 			}
 			return ResponseEntity.ok("handelGenDefineRepositoryToService successful.");
 		} catch (Exception e) {
@@ -228,6 +234,7 @@ public class RestAPI {
 					listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
 					handelGen.HandlGenerateControllerAPIBasic(packageNameSplit, listtBLColumn, conInfo);
 				}
+				conInfo.setTblName("All");
 			}
 			return ResponseEntity.ok("handelGenControllerAPIBasic successful.");
 		} catch (Exception e) {
@@ -270,6 +277,7 @@ public class RestAPI {
 					handelGen.HandleGenerateIndex(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 							ExportedKeysInfos);
 				}
+				conInfo.setTblName("All");
 			}
 			return ResponseEntity.ok("handelGenControllerAPIBasic successful.");
 		} catch (Exception e) {
@@ -300,6 +308,7 @@ public class RestAPI {
 					handelGen.HandleGenerateForm(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 							ExportedKeysInfos);
 				}
+				conInfo.setTblName("All");
 			}
 			return ResponseEntity.ok("handelGenControllerAPIBasic successful.");
 		} catch (Exception e) {
