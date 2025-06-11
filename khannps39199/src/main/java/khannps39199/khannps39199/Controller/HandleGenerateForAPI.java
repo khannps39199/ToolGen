@@ -482,9 +482,12 @@ public class HandleGenerateForAPI {
 						fieldsForFromFE.add(itemFeildsForFormFE);
 
 					} else {
-						itemFeildsForFormFE.put("type", type);
-						itemFeildsForFormFE.put("fieldName", variableFeildName);
-						fieldsForFromFE.add(itemFeildsForFormFE);
+						if (!(variableFeildName.toUpperCase().contains("CREATE")
+								|| variableFeildName.toUpperCase().contains("UPDATE"))) {
+							itemFeildsForFormFE.put("type", type);
+							itemFeildsForFormFE.put("fieldName", variableFeildName);
+							fieldsForFromFE.add(itemFeildsForFormFE);
+						}
 					}
 				}
 			}
