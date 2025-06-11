@@ -25,7 +25,7 @@ import khannps39199.khannps39199.Model.ForeignKeyInfo;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "*")
 public class RestAPI {
 	@Autowired
 	HttpServletRequest req;
