@@ -421,6 +421,65 @@ public class HandleGenerateForAPI {
 			throws SQLException, IOException {
 		Map<String, Object> contextForFormFEIndex = new HashMap<>();
 		String firstUpcaseClassName = commonFunction.ConvertToClassName(conInfo.getTblName());
+		List<Map<String, String>> fieldsForFromFE = new ArrayList<>();
+		List<Map<String, String>> fieldsForReacticeObject = new ArrayList<>();
+		List<Map<String, String>> exportKeys = new ArrayList<>();
+		for (ColumnInfo e : listtBLColumn) {
+			Map<String, String> itemFeildsForFormFE = new HashMap<>();
+			Map<String, String> itemFeildsForReacticeObject = new HashMap<>();
+			String sqlType = e.getSqlType().toUpperCase();
+			String javaType = switch (sqlType) {
+			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+			case "INT", "INT IDENTITY", "INTEGER" -> "int";
+			case "BIGINT" -> "long";
+			case "BIT" -> "boolean";
+			case "DECIMAL" -> "double";
+			case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+			default -> "String"; // fallback
+			};
+			String type = switch (sqlType) {
+			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "text";
+			case "INT", "INT IDENTITY", "INTEGER" -> "number";
+			case "BIGINT" -> "number";
+			case "BIT" -> "text";
+			case "DECIMAL" -> "number";
+			case "DATE", "DATETIME", "TIMESTAMP" -> "datetime";
+			default -> "text"; // fallback
+			};
+			boolean isExistsKey = importedKeysInfosList.stream()
+					.anyMatch(keys -> keys.getFkColumn().equals(e.getName()));
+			if (isExistsKey) {
+				continue;
+			}
+			String variableFeildName = commonFunction.firstLowCase(commonFunction.ConvertToClassName(e.getName()));
+			if (!sqlType.equals("INT IDENTITY")) {
+				if (variableFeildName.toUpperCase().contains("EMAIL")) {
+					itemFeildsForFormFE.put("type", "email");
+					itemFeildsForFormFE.put("fieldName", variableFeildName);
+					fieldsForFromFE.add(itemFeildsForFormFE);
+				} else {
+					if (variableFeildName.toUpperCase().contains("PASSWORD")) {
+						itemFeildsForFormFE.put("type", "password");
+						itemFeildsForFormFE.put("fieldName", variableFeildName);
+						fieldsForFromFE.add(itemFeildsForFormFE);
+
+					} else {
+						if (!(variableFeildName.toUpperCase().contains("CREATE")
+								|| variableFeildName.toUpperCase().contains("UPDATE"))) {
+							itemFeildsForFormFE.put("type", type);
+							itemFeildsForFormFE.put("fieldName", variableFeildName);
+							fieldsForFromFE.add(itemFeildsForFormFE);
+						}
+					}
+				}
+			}
+			itemFeildsForReacticeObject.put("fieldName", variableFeildName);
+			fieldsForReacticeObject.add(itemFeildsForReacticeObject);
+		}
+
+		contextForFormFEIndex.put("TableName", firstUpcaseClassName);
+		contextForFormFEIndex.put("fieldsToDynamicFeild", fieldsForFromFE);
+		contextForFormFEIndex.put("fields", fieldsForReacticeObject);
 		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
 		MustacheFactory mf = new DefaultMustacheFactory();
 		Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
@@ -461,7 +520,7 @@ public class HandleGenerateForAPI {
 			case "BIGINT" -> "number";
 			case "BIT" -> "text";
 			case "DECIMAL" -> "number";
-			case "DATE", "DATETIME", "TIMESTAMP" -> "date";
+			case "DATE", "DATETIME", "TIMESTAMP" -> "datetime";
 			default -> "text"; // fallback
 			};
 			boolean isExistsKey = importedKeysInfosList.stream()

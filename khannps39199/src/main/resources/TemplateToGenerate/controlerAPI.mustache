@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api")
 @CrossOrigin(origins = "http://localhost:5173")
 public class {{Classname}}API {
 	@Autowired
@@ -31,7 +31,7 @@ public class {{Classname}}API {
 	@Autowired
 	private {{Classname}}Mapper {{variableName}}Mapper;
 
-	@GetMapping("/{{Classname}}")
+	@GetMapping("/admin/{{Classname}}")
 	public ResponseEntity<List<{{Classname}}DTOS>> getAll{{Classname}}Api(	
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(defaultValue = "5") int size) {
@@ -43,7 +43,7 @@ public class {{Classname}}API {
 		return ResponseEntity.ok({{variableName}});
 	}
 
-	@GetMapping("/{{Classname}}/{id}")
+	@GetMapping("/admin/{{Classname}}/{id}")
 	public ResponseEntity<{{Classname}}> get{{Classname}}ByIdApi(@PathVariable int id) {
 		//try{
 		//}catch(Exception e){
@@ -52,18 +52,29 @@ public class {{Classname}}API {
 		{{Classname}} {{variableName}} =({{Classname}}){{variableName}}Service.{{variableName}}FindById(id).orElse(new {{Classname}}());
 		return ResponseEntity.ok({{variableName}});
 	}
-	@PostMapping("/{{Classname}}")
+	@PostMapping("/admin/{{Classname}}")
 	public ResponseEntity<{{Classname}}> addNew{{Classname}}(@RequestBody {{Classname}}DTOS entity) {
 	    
 	    {{Classname}} saved = {{variableName}}Service.{{variableName}}Save({{variableName}}Mapper.mapperToObject(entity));	    
 	    return ResponseEntity.ok(saved);
 	}
-	@PutMapping("/{{Classname}}")
-	public ResponseEntity<{{Classname}}> update{{Classname}}(@RequestBody {{Classname}} entity) {
-	    {{Classname}} updated = {{variableName}}Service.{{variableName}}Save(entity); 
-	    return ResponseEntity.ok(updated);
+	@PutMapping("/admin/{{Classname}}")
+	public ResponseEntity<?> update{{Classname}}(@RequestBody {{Classname}} entity) {
+			try {
+			{{Classname}}  isExist = {{variableName}}Service.{{variableName}}FindById(id).orElse(null);
+			if (isExist != null) {
+				{{Classname}}  update = {{variableName}}Mapper.mapperToObject(entity);
+				{{variableName}}Service.{{variableName}}Save(update);
+				return ResponseEntity.badRequest().body(Map.of("measage", "Update successfuly", "update", update));
+			} else {
+				return ResponseEntity.badRequest().body(Map.of("measage", "Đã có lỗi xảy ra"));
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(Map.of("measage", "Đã có lỗi xảy ra"));
+		} 
 	}
-	@DeleteMapping("/{{Classname}}/{id}")
+	@DeleteMapping("/admin/{{Classname}}/{id}")
 	public ResponseEntity<Void> delete{{Classname}}(@PathVariable int id) {
 	    {{variableName}}Service.{{variableName}}DeleteById(id); 
 	    return ResponseEntity.noContent().build(); 
