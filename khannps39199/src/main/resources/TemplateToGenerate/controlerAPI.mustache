@@ -2,6 +2,7 @@ package {{packageName}}.API;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -58,8 +59,8 @@ public class {{Classname}}API {
 	    {{Classname}} saved = {{variableName}}Service.{{variableName}}Save({{variableName}}Mapper.mapperToObject(entity));	    
 	    return ResponseEntity.ok(saved);
 	}
-	@PutMapping("/admin/{{Classname}}")
-	public ResponseEntity<?> update{{Classname}}(@RequestBody {{Classname}} entity) {
+	@PutMapping("/admin/{{Classname}}/{id}")
+	public ResponseEntity<?> update{{Classname}}( @PathVariable int id,@RequestBody {{Classname}}DTOS entity) {
 			try {
 			{{Classname}}  isExist = {{variableName}}Service.{{variableName}}FindById(id).orElse(null);
 			if (isExist != null) {
