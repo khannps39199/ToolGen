@@ -59,23 +59,20 @@
                                     </button>
                                 </div>
                             </form>
-                            <div class="row mt-2">
-                                <button @click="HandelGenEntity" class="btn btn-primary col-2">Entity</button>
-                                <button @click="HandelGenDTOS" class="btn btn-secondary col-2">DTOS</button>
-                                <button @click="HandelGenMapper" class="btn btn-success col-2">Mapper</button>
-                                <button @click="HandelGenRepository" class="btn btn-danger col-2">Repository</button>
+                            <div class="button-grid">
+                                <button @click="HandelGenEntity" class="btn btn-primary">Entity</button>
+                                <button @click="HandelGenDTOS" class="btn btn-secondary">DTOS</button>
+                                <button @click="HandelGenMapper" class="btn btn-success">Mapper</button>
+                                <button @click="HandelGenRepository" class="btn btn-danger">Repository</button>
                                 <button @click="HandelGenDefineRepositoryToService"
-                                    class="btn btn-warning col-2">DefineRepoToService</button>
-                                <button @click="HandelGenControllerAPIBasic"
-                                    class="btn btn-info col-2">ControllerAPI</button>
-                            </div>
-                            <div class="row mt-2">
-                                <button @click="HandleGenIndex" class="btn btn-dark col-4">Generate Index</button>
-                                <button @click="HandleGenAdminRouter" class="btn btn-warning col-4">
-                                    Generate AdminRouter
-                                </button>
-                                <button @click="HandleGenForm" class="btn btn-light text-dark col-4">Generate
-                                    Form</button>
+                                    class="btn btn-warning">DefineRepoToService</button>
+                                <button @click="HandelGenControllerAPIBasic" class="btn btn-info">ControllerAPI</button>
+                                <button @click="HandleGenIndex" class="btn btn-dark">Generate Index</button>
+                                <button @click="HandleGenAdminRouter" class="btn btn-warning">Generate
+                                    AdminRouter</button>
+                                <button @click="HandleGenForm" class="btn btn-light text-dark">Generate Form</button>
+                                <button @click="ModifiersReposotory" class="btn btn-light-gray text-dark">Modifiers
+                                    Reposotory</button>
                             </div>
                         </div>
                     </div>
@@ -85,7 +82,7 @@
     </body>
 </template>
 <script setup>
-import { reactive, ref, watch, watchEffect } from 'vue'
+import { reactive, ref, watch, watchEffect, withModifiers } from 'vue'
 import GenService from '../service/GenService'
 const model = reactive({
     userName: 'sa',
@@ -131,6 +128,10 @@ async function HandleGenForm() {
     await GenService.HandleGenForm()
 }
 
+async function ModifiersReposotory() {
+    await GenService.ModifiersReposotory()
+}
+
 watch(() => model.dbName, async () => {
     listtBL.value = await GenService.getTableName(model.dbName)
 })
@@ -140,4 +141,11 @@ watch(() => model.tblName, async () => {
 })
 
 </script>
-<style scoped></style>
+<style scoped>
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+</style>

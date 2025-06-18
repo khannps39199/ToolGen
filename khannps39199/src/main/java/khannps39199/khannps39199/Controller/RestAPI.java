@@ -317,4 +317,33 @@ public class RestAPI {
 		}
 	}
 
+	@GetMapping("/ModifiersReposotory")
+	public ResponseEntity<?> ModifiersReposotory() {
+		try {
+			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+			List<ColumnInfo> listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
+			List<String> packageNameSplit = Arrays.asList(conInfo.getBackEndSourceURL().split("\\\\"));
+			if (!conInfo.getTblName().equals("All")) {
+				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, conInfo.getTblName());
+				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, conInfo.getTblName());
+				handelGen.ModifiersReposotory(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
+						ExportedKeysInfos);
+			} else {
+				List<String> listtBL = getAllTables.getAllTableNames();
+				for (String tableItem : listtBL) {
+					List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, tableItem);
+					List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, tableItem);
+					conInfo.setTblName(tableItem);
+					listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
+					handelGen.ModifiersReposotory(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
+							ExportedKeysInfos);
+				}
+				conInfo.setTblName("All");
+			}
+			return ResponseEntity.ok("ModifiersReposotory successful.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("ModifiersReposotory failed: " + e.getMessage());
+		}
+	}
 }

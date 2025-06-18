@@ -132,6 +132,16 @@ const GenService = {
             console.error('Connection failed:', error);
             return null;
         }
+    },
+    async ModifiersReposotory() {
+        try {
+            const response = await api.get(`/ModifiersReposotory`);
+            console.log('Response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Connection failed:', error);
+            return null;
+        }
     }
 }
 export default GenService

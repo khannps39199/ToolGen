@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface {{className}}Repository extends JpaRepository<{{className}}, {{idType}}> {
+public interface {{className}}Repository extends JpaRepository<{{className}}, {{idType}}>, JpaSpecificationExecutor<{{className}}> {
     // Add custom query methods here if needed
 }

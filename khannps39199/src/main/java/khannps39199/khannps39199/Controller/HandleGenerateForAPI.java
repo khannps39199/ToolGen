@@ -4,11 +4,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -578,4 +582,117 @@ public class HandleGenerateForAPI {
 		}
 	}
 
+	public void ModifiersReposotory(List<String> packageNameSplit, List<ColumnInfo> listtBLColumn, ConnectInfo conInfo,
+			List<ForeignKeyInfo> importedKeysInfosList, List<ForeignKeyInfo> exportedKeysInfosList)
+			throws SQLException, IOException {
+
+//		Map<String, Object> contextForFormFE = new HashMap<>();
+		String firstUpcaseClassName = commonFunction.ConvertToClassName(conInfo.getTblName());
+//
+//		List<Map<String, String>> fieldsForFromFE = new ArrayList<>();
+//		List<Map<String, String>> fieldsForReacticeObject = new ArrayList<>();
+//		List<Map<String, String>> exportKeys = new ArrayList<>();
+//		for (ColumnInfo e : listtBLColumn) {
+//			Map<String, String> itemFeildsForFormFE = new HashMap<>();
+//			Map<String, String> itemFeildsForReacticeObject = new HashMap<>();
+//			String sqlType = e.getSqlType().toUpperCase();
+//			String javaType = switch (sqlType) {
+//			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+//			case "INT", "INT IDENTITY", "INTEGER" -> "int";
+//			case "BIGINT" -> "long";
+//			case "BIT" -> "boolean";
+//			case "DECIMAL" -> "double";
+//			case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+//			default -> "String"; // fallback
+//			};
+//			String type = switch (sqlType) {
+//			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "text";
+//			case "INT", "INT IDENTITY", "INTEGER" -> "number";
+//			case "BIGINT" -> "number";
+//			case "BIT" -> "text";
+//			case "DECIMAL" -> "number";
+//			case "DATE", "DATETIME", "TIMESTAMP" -> "datetime";
+//			default -> "text"; // fallback
+//			};
+//			boolean isExistsKey = importedKeysInfosList.stream()
+//					.anyMatch(keys -> keys.getFkColumn().equals(e.getName()));
+//			if (isExistsKey) {
+//				continue;
+//			}
+//			String variableFeildName = commonFunction.firstLowCase(commonFunction.ConvertToClassName(e.getName()));
+//			if (!sqlType.equals("INT IDENTITY")) {
+//				if (variableFeildName.toUpperCase().contains("EMAIL")) {
+//					itemFeildsForFormFE.put("type", "email");
+//					itemFeildsForFormFE.put("fieldName", variableFeildName);
+//					fieldsForFromFE.add(itemFeildsForFormFE);
+//				} else {
+//					if (variableFeildName.toUpperCase().contains("PASSWORD")) {
+//						itemFeildsForFormFE.put("type", "password");
+//						itemFeildsForFormFE.put("fieldName", variableFeildName);
+//						fieldsForFromFE.add(itemFeildsForFormFE);
+//
+//					} else {
+//						if (!(variableFeildName.toUpperCase().contains("CREATE")
+//								|| variableFeildName.toUpperCase().contains("UPDATE"))) {
+//							itemFeildsForFormFE.put("type", type);
+//							itemFeildsForFormFE.put("fieldName", variableFeildName);
+//							fieldsForFromFE.add(itemFeildsForFormFE);
+//						}
+//					}
+//				}
+//			}
+//			itemFeildsForReacticeObject.put("fieldName", variableFeildName);
+//			fieldsForReacticeObject.add(itemFeildsForReacticeObject);
+//		}
+//		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
+//		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+//		case "INT", "INT IDENTITY", "INTEGER" -> "int";
+//		case "BIGINT" -> "long";
+//		case "BIT" -> "boolean";
+//		case "DECIMAL" -> "Double";
+//		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+//		default -> "String"; // fallback
+//		};
+//		contextForFormFE.put("fieldsToDynamicFeild", fieldsForFromFE);
+//		contextForFormFE.put("fields", fieldsForReacticeObject);
+//
+//		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
+//		MustacheFactory mf = new DefaultMustacheFactory();
+//		Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
+//
+//		new File(conInfo.getFrontEndSourceURL() + "/src/components/Admin/" + firstUpcaseClassName).mkdirs();
+//		mf = new DefaultMustacheFactory();
+//		mustache = mf.compile("TemplateToGenerate/FormModelFE.mustache");
+//		try (Writer writer = new FileWriter(
+//				conInfo.getFrontEndSourceURL() + "/src/components/Admin/" + firstUpcaseClassName + "/Form.vue")) {
+//			mustache.execute(writer, contextForFormFE);
+//		}
+		String filePath = conInfo.getBackEndSourceURL() + "/Repository" + "/" + firstUpcaseClassName
+				+ "Repository.java";
+		System.out.println(filePath);
+		Path path = Paths.get(filePath);
+		String javaType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
+		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+		case "INT", "INT IDENTITY", "INTEGER" -> "Integer";
+		case "BIGINT" -> "long";
+		case "BIT" -> "boolean";
+		case "DECIMAL" -> "Double";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+		default -> "String"; // fallback
+		};
+		String updatedContent = Files.lines(path).map(line -> {
+			if (line.contains("extends JpaRepository<" + firstUpcaseClassName + ", " + javaType + ">")) {
+				return line.replace("JpaRepository<" + firstUpcaseClassName + ", Integer>",
+						"JpaRepository<" + firstUpcaseClassName + "," + javaType + ">" + ", JpaSpecificationExecutor<"
+								+ firstUpcaseClassName + ">");
+			}
+			return line;
+		}).collect(Collectors.joining(System.lineSeparator()));
+
+		try {
+			Files.write(path, updatedContent.getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }
