@@ -346,4 +346,65 @@ public class RestAPI {
 					.body("ModifiersReposotory failed: " + e.getMessage());
 		}
 	}
+
+	@GetMapping("/ModifiersService")
+	public ResponseEntity<?> ModifiersService() {
+		try {
+			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+			List<ColumnInfo> listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
+			List<String> packageNameSplit = Arrays.asList(conInfo.getBackEndSourceURL().split("\\\\"));
+			if (!conInfo.getTblName().equals("All")) {
+				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, conInfo.getTblName());
+				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, conInfo.getTblName());
+				handelGen.ModifiersService(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
+						ExportedKeysInfos);
+			} else {
+				List<String> listtBL = getAllTables.getAllTableNames();
+				for (String tableItem : listtBL) {
+					List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, tableItem);
+					List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, tableItem);
+					conInfo.setTblName(tableItem);
+					listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
+					handelGen.ModifiersService(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
+							ExportedKeysInfos);
+				}
+				conInfo.setTblName("All");
+			}
+			return ResponseEntity.ok("ModifiersService successful.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("ModifiersService failed: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/ModifiersAPI")
+	public ResponseEntity<?> ModifiersAPI() {
+		try {
+			ConnectInfo conInfo = connectInfoHolder.getConnectInfo();
+			List<ColumnInfo> listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
+			List<String> packageNameSplit = Arrays.asList(conInfo.getBackEndSourceURL().split("\\\\"));
+			if (!conInfo.getTblName().equals("All")) {
+				List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, conInfo.getTblName());
+				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, conInfo.getTblName());
+				handelGen.ModifiersAPI(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos, ExportedKeysInfos);
+			} else {
+				List<String> listtBL = getAllTables.getAllTableNames();
+				for (String tableItem : listtBL) {
+					if (tableItem.equals("custom"))
+						continue;
+					List<ForeignKeyInfo> ImportedKeysInfos = getAllTables.getImportedForeignKeys(ds, tableItem);
+					List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, tableItem);
+					conInfo.setTblName(tableItem);
+					listtBLColumn = getAllTables.getTableColumns(conInfo.getTblName());
+					handelGen.ModifiersAPI(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
+							ExportedKeysInfos);
+				}
+				conInfo.setTblName("All");
+			}
+			return ResponseEntity.ok("ModifiersAPI successful.");
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("ModifiersAPI failed: " + e.getMessage());
+		}
+	}
 }

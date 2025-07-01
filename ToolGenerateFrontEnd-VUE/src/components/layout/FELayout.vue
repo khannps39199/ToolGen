@@ -51,7 +51,8 @@
                                 <div class="mb-3">
                                     <label for="frontEndSourceURL" class="form-label">frontEndSourceURL</label>
                                     <input type="text" class="form-control" id="frontEndSourceURL"
-                                        name="frontEndSourceURL" placeholder="" v-model="model.frontEndSourceURL" />
+                                        name="frontEndSourceURL" placeholder="Nhập URL source FrontEndURL to genarate"
+                                        v-model="model.frontEndSourceURL" />
                                 </div>
                                 <div>
                                     <button type="submit" class="btn btn-success w-100">
@@ -60,20 +61,25 @@
                                 </div>
                             </form>
                             <div class="button-grid">
-                                <button @click="HandelGenEntity" class="btn btn-primary">Entity</button>
-                                <button @click="HandelGenDTOS" class="btn btn-secondary">DTOS</button>
-                                <button @click="HandelGenMapper" class="btn btn-success">Mapper</button>
-                                <button @click="HandelGenRepository" class="btn btn-danger">Repository</button>
+                                <button @click="HandelGenEntity" class="btn custom-entity">Entity</button>
+                                <button @click="HandelGenDTOS" class="btn custom-dtos">DTOS</button>
+                                <button @click="HandelGenMapper" class="btn custom-mapper">Mapper</button>
+                                <button @click="HandelGenRepository" class="btn custom-repository">Repository</button>
                                 <button @click="HandelGenDefineRepositoryToService"
-                                    class="btn btn-warning">DefineRepoToService</button>
-                                <button @click="HandelGenControllerAPIBasic" class="btn btn-info">ControllerAPI</button>
-                                <button @click="HandleGenIndex" class="btn btn-dark">Generate Index</button>
-                                <button @click="HandleGenAdminRouter" class="btn btn-warning">Generate
+                                    class="btn custom-define">DefineRepoToService</button>
+                                <button @click="HandelGenControllerAPIBasic"
+                                    class="btn custom-controller">ControllerAPI</button>
+                                <button @click="HandleGenIndex" class="btn custom-index">Generate Index</button>
+                                <button @click="HandleGenAdminRouter" class="btn custom-admin-router">Generate
                                     AdminRouter</button>
-                                <button @click="HandleGenForm" class="btn btn-light text-dark">Generate Form</button>
-                                <button @click="ModifiersReposotory" class="btn btn-light-gray text-dark">Modifiers
+                                <button @click="HandleGenForm" class="btn custom-form">Generate Form</button>
+                                <button @click="ModifiersReposotory" class="btn custom-mod-repo">Modifiers
                                     Reposotory</button>
+                                <button @click="ModifiersService"
+                                    class="btn custom-mod-service">ModifiersService</button>
+                                <button @click="ModifiersAPI" class="btn custom-mod-service">ModifiersAPI</button>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -131,6 +137,12 @@ async function HandleGenForm() {
 async function ModifiersReposotory() {
     await GenService.ModifiersReposotory()
 }
+async function ModifiersService() {
+    await GenService.ModifiersService()
+}
+async function ModifiersAPI() {
+    await GenService.ModifiersAPI()
+}
 
 watch(() => model.dbName, async () => {
     listtBL.value = await GenService.getTableName(model.dbName)
@@ -143,9 +155,90 @@ watch(() => model.tblName, async () => {
 </script>
 <style scoped>
 .button-grid {
+    /* display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px; */
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
     margin-top: 1rem;
+}
+
+.btn {
+    padding: 10px 16px;
+    font-weight: bold;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* 🎨 Individual button colors */
+.custom-entity {
+    background-color: #007BFF;
+    /* Blue */
+}
+
+.custom-dtos {
+    background-color: #6F42C1;
+    /* Purple */
+}
+
+.custom-mapper {
+    background-color: #20C997;
+    /* Teal */
+}
+
+.custom-repository {
+    background-color: #17A2B8;
+    /* Cyan */
+}
+
+.custom-define {
+    background-color: #FD7E14;
+    /* Orange */
+}
+
+.custom-controller {
+    background-color: #28A745;
+    /* Green */
+}
+
+.custom-index {
+    background-color: #6610f2;
+    /* Indigo */
+}
+
+.custom-admin-router {
+    background-color: #E83E8C;
+    /* Pink */
+}
+
+.custom-form {
+    background-color: #FFC107;
+    /* Amber */
+    color: #212529;
+    /* dark text */
+}
+
+.custom-mod-repo {
+    background-color: #DC3545;
+    /* Red */
+}
+
+.custom-mod-service {
+    background-color: #343A40;
+    /* Dark Gray */
+}
+
+.custom-mod-service:hover {
+    background-color: #495057;
 }
 </style>

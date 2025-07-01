@@ -142,6 +142,26 @@ const GenService = {
             console.error('Connection failed:', error);
             return null;
         }
+    },
+    async ModifiersService() {
+        try {
+            const response = await api.get(`/ModifiersService`);
+            console.log('Response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Connection failed:', error);
+            return null;
+        }
+    },
+    async ModifiersAPI() {
+        try {
+            const response = await api.get(`/ModifiersAPI`);
+            console.log('Response:', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Connection failed:', error);
+            return null;
+        }
     }
 }
 export default GenService

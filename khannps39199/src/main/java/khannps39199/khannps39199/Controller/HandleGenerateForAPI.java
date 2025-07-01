@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
@@ -470,9 +472,21 @@ public class HandleGenerateForAPI {
 					} else {
 						if (!(variableFeildName.toUpperCase().contains("CREATE")
 								|| variableFeildName.toUpperCase().contains("UPDATE"))) {
-							itemFeildsForFormFE.put("type", type);
-							itemFeildsForFormFE.put("fieldName", variableFeildName);
-							fieldsForFromFE.add(itemFeildsForFormFE);
+							if (type.equals("number")) {
+
+								Map<String, String> itemFieldsForFromFETypeNumberFrom = new HashMap<>();
+								Map<String, String> itemFieldsForFromFETypeNumberTo = new HashMap<>();
+								itemFieldsForFromFETypeNumberFrom.put("type", type);
+								itemFieldsForFromFETypeNumberFrom.put("fieldName", variableFeildName + "From");
+								itemFieldsForFromFETypeNumberTo.put("type", type);
+								itemFieldsForFromFETypeNumberTo.put("fieldName", variableFeildName + "To");
+								fieldsForFromFE.add(itemFieldsForFromFETypeNumberFrom);
+								fieldsForFromFE.add(itemFieldsForFromFETypeNumberTo);
+							} else {
+								itemFeildsForFormFE.put("type", type);
+								itemFeildsForFormFE.put("fieldName", variableFeildName);
+								fieldsForFromFE.add(itemFeildsForFormFE);
+							}
 						}
 					}
 				}
@@ -586,87 +600,7 @@ public class HandleGenerateForAPI {
 			List<ForeignKeyInfo> importedKeysInfosList, List<ForeignKeyInfo> exportedKeysInfosList)
 			throws SQLException, IOException {
 
-//		Map<String, Object> contextForFormFE = new HashMap<>();
 		String firstUpcaseClassName = commonFunction.ConvertToClassName(conInfo.getTblName());
-//
-//		List<Map<String, String>> fieldsForFromFE = new ArrayList<>();
-//		List<Map<String, String>> fieldsForReacticeObject = new ArrayList<>();
-//		List<Map<String, String>> exportKeys = new ArrayList<>();
-//		for (ColumnInfo e : listtBLColumn) {
-//			Map<String, String> itemFeildsForFormFE = new HashMap<>();
-//			Map<String, String> itemFeildsForReacticeObject = new HashMap<>();
-//			String sqlType = e.getSqlType().toUpperCase();
-//			String javaType = switch (sqlType) {
-//			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
-//			case "INT", "INT IDENTITY", "INTEGER" -> "int";
-//			case "BIGINT" -> "long";
-//			case "BIT" -> "boolean";
-//			case "DECIMAL" -> "double";
-//			case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
-//			default -> "String"; // fallback
-//			};
-//			String type = switch (sqlType) {
-//			case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "text";
-//			case "INT", "INT IDENTITY", "INTEGER" -> "number";
-//			case "BIGINT" -> "number";
-//			case "BIT" -> "text";
-//			case "DECIMAL" -> "number";
-//			case "DATE", "DATETIME", "TIMESTAMP" -> "datetime";
-//			default -> "text"; // fallback
-//			};
-//			boolean isExistsKey = importedKeysInfosList.stream()
-//					.anyMatch(keys -> keys.getFkColumn().equals(e.getName()));
-//			if (isExistsKey) {
-//				continue;
-//			}
-//			String variableFeildName = commonFunction.firstLowCase(commonFunction.ConvertToClassName(e.getName()));
-//			if (!sqlType.equals("INT IDENTITY")) {
-//				if (variableFeildName.toUpperCase().contains("EMAIL")) {
-//					itemFeildsForFormFE.put("type", "email");
-//					itemFeildsForFormFE.put("fieldName", variableFeildName);
-//					fieldsForFromFE.add(itemFeildsForFormFE);
-//				} else {
-//					if (variableFeildName.toUpperCase().contains("PASSWORD")) {
-//						itemFeildsForFormFE.put("type", "password");
-//						itemFeildsForFormFE.put("fieldName", variableFeildName);
-//						fieldsForFromFE.add(itemFeildsForFormFE);
-//
-//					} else {
-//						if (!(variableFeildName.toUpperCase().contains("CREATE")
-//								|| variableFeildName.toUpperCase().contains("UPDATE"))) {
-//							itemFeildsForFormFE.put("type", type);
-//							itemFeildsForFormFE.put("fieldName", variableFeildName);
-//							fieldsForFromFE.add(itemFeildsForFormFE);
-//						}
-//					}
-//				}
-//			}
-//			itemFeildsForReacticeObject.put("fieldName", variableFeildName);
-//			fieldsForReacticeObject.add(itemFeildsForReacticeObject);
-//		}
-//		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
-//		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
-//		case "INT", "INT IDENTITY", "INTEGER" -> "int";
-//		case "BIGINT" -> "long";
-//		case "BIT" -> "boolean";
-//		case "DECIMAL" -> "Double";
-//		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
-//		default -> "String"; // fallback
-//		};
-//		contextForFormFE.put("fieldsToDynamicFeild", fieldsForFromFE);
-//		contextForFormFE.put("fields", fieldsForReacticeObject);
-//
-//		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
-//		MustacheFactory mf = new DefaultMustacheFactory();
-//		Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
-//
-//		new File(conInfo.getFrontEndSourceURL() + "/src/components/Admin/" + firstUpcaseClassName).mkdirs();
-//		mf = new DefaultMustacheFactory();
-//		mustache = mf.compile("TemplateToGenerate/FormModelFE.mustache");
-//		try (Writer writer = new FileWriter(
-//				conInfo.getFrontEndSourceURL() + "/src/components/Admin/" + firstUpcaseClassName + "/Form.vue")) {
-//			mustache.execute(writer, contextForFormFE);
-//		}
 		String filePath = conInfo.getBackEndSourceURL() + "/Repository" + "/" + firstUpcaseClassName
 				+ "Repository.java";
 		System.out.println(filePath);
@@ -687,6 +621,90 @@ public class HandleGenerateForAPI {
 								+ firstUpcaseClassName + ">");
 			}
 			return line;
+		}).collect(Collectors.joining(System.lineSeparator()));
+		try {
+			Files.write(path, updatedContent.getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void ModifiersAPI(List<String> packageNameSplit, List<ColumnInfo> listtBLColumn, ConnectInfo conInfo,
+			List<ForeignKeyInfo> importedKeysInfosList, List<ForeignKeyInfo> exportedKeysInfosList)
+			throws SQLException, IOException {
+		String lowerClassName = commonFunction.ConvertToVariableName(conInfo.getTblName());
+		String firstUpcaseClassName = commonFunction.ConvertToClassName(conInfo.getTblName()).equals(
+				"PromotionProducts") ? "PromotionProduct" : commonFunction.ConvertToClassName(conInfo.getTblName());
+		String filePath = conInfo.getBackEndSourceURL() + "/API" + "/" + firstUpcaseClassName + "API.java";
+		Path path = Paths.get(filePath);
+		String javaType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
+		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+		case "INT", "INT IDENTITY", "INTEGER" -> "Integer";
+		case "BIGINT" -> "long";
+		case "BIT" -> "boolean";
+		case "DECIMAL" -> "Double";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+		default -> "String"; // fallback
+		};
+		String updatedContent = Files.lines(path).map(line -> {
+			if (line.contains(lowerClassName + "Service." + lowerClassName + "FindAll(page, size)")) {
+				return line.replace(lowerClassName + "Service." + lowerClassName + "FindAll(page, size)",
+						lowerClassName + "Service." + lowerClassName + "FindAll(page, size, filters)");
+			}
+			return line;
+		}).collect(Collectors.joining(System.lineSeparator()));
+
+		try {
+			Files.write(path, updatedContent.getBytes());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void ModifiersService(List<String> packageNameSplit, List<ColumnInfo> listtBLColumn, ConnectInfo conInfo,
+			List<ForeignKeyInfo> importedKeysInfosList, List<ForeignKeyInfo> exportedKeysInfosList)
+			throws SQLException, IOException {
+		String lowerClassName = commonFunction.ConvertToVariableName(conInfo.getTblName());
+		String firstUpcaseClassName = commonFunction.ConvertToClassName(conInfo.getTblName()).equals(
+				"PromotionProducts") ? "PromotionProduct" : commonFunction.ConvertToClassName(conInfo.getTblName());
+		String filePath = conInfo.getBackEndSourceURL() + "/Service" + "/" + firstUpcaseClassName + "Service.java";
+		Path path = Paths.get(filePath);
+		String javaType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
+		case "VARCHAR", "NVARCHAR", "CHAR", "TEXT" -> "String";
+		case "INT", "INT IDENTITY", "INTEGER" -> "Integer";
+		case "BIGINT" -> "long";
+		case "BIT" -> "boolean";
+		case "DECIMAL" -> "Double";
+		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
+		default -> "String"; // fallback
+		};
+		AtomicBoolean isContainSpecBuilder = new AtomicBoolean(false);
+		String updatedContent = Files.lines(path).flatMap(line -> {
+//			if (line.contains("package com.aos.AOSBE.Service;")) {
+//				return Stream.of("private GenericSpecificationBuilder specBuilder;", // insert before
+//						"@Autowired");
+//			}
+
+//			if (line.contains("@Autowired") && !isContainSpecBuilder.get()) {
+//				isContainSpecBuilder.set(true);
+//				return Stream.of("private GenericSpecificationBuilder specBuilder;", // insert before
+//						"@Autowired");
+//			}
+
+			if (line.contains(
+					"List<" + firstUpcaseClassName + "> " + lowerClassName + "FindAll(int page, int size) {")) {
+				return Stream.of(line.replace(
+						"List<" + firstUpcaseClassName + "> " + lowerClassName + "FindAll(int page, int size) {",
+						"List<" + firstUpcaseClassName + "> " + lowerClassName
+								+ "FindAll(int page, int size, Map<String, Object> filters) {"));
+			}
+
+			if (line.contains("return " + lowerClassName + "Repository.findAll(pageable).getContent();")) {
+				return Stream.of("Specification<" + firstUpcaseClassName + "> spec = specBuilder.buildFilter(filters);",
+						"return " + lowerClassName + "Repository.findAll(spec, pageable).getContent();");
+			}
+
+			return Stream.of(line);
 		}).collect(Collectors.joining(System.lineSeparator()));
 
 		try {
