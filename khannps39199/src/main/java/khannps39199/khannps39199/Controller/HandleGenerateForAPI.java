@@ -473,7 +473,15 @@ public class HandleGenerateForAPI {
 						if (!(variableFeildName.toUpperCase().contains("CREATE")
 								|| variableFeildName.toUpperCase().contains("UPDATE"))) {
 							if (type.equals("number")) {
-
+								Map<String, String> itemFieldsForFromFETypeNumberFrom = new HashMap<>();
+								Map<String, String> itemFieldsForFromFETypeNumberTo = new HashMap<>();
+								itemFieldsForFromFETypeNumberFrom.put("type", type);
+								itemFieldsForFromFETypeNumberFrom.put("fieldName", variableFeildName + "From");
+								itemFieldsForFromFETypeNumberTo.put("type", type);
+								itemFieldsForFromFETypeNumberTo.put("fieldName", variableFeildName + "To");
+								fieldsForFromFE.add(itemFieldsForFromFETypeNumberFrom);
+								fieldsForFromFE.add(itemFieldsForFromFETypeNumberTo);
+							} else if (type.equals("datetime")) {
 								Map<String, String> itemFieldsForFromFETypeNumberFrom = new HashMap<>();
 								Map<String, String> itemFieldsForFromFETypeNumberTo = new HashMap<>();
 								itemFieldsForFromFETypeNumberFrom.put("type", type);
@@ -487,6 +495,15 @@ public class HandleGenerateForAPI {
 								itemFeildsForFormFE.put("fieldName", variableFeildName);
 								fieldsForFromFE.add(itemFeildsForFormFE);
 							}
+						} else {
+							Map<String, String> itemFieldsForFromFETypeNumberFrom = new HashMap<>();
+							Map<String, String> itemFieldsForFromFETypeNumberTo = new HashMap<>();
+							itemFieldsForFromFETypeNumberFrom.put("type", type);
+							itemFieldsForFromFETypeNumberFrom.put("fieldName", variableFeildName + "From");
+							itemFieldsForFromFETypeNumberTo.put("type", type);
+							itemFieldsForFromFETypeNumberTo.put("fieldName", variableFeildName + "To");
+							fieldsForFromFE.add(itemFieldsForFromFETypeNumberFrom);
+							fieldsForFromFE.add(itemFieldsForFromFETypeNumberTo);
 						}
 					}
 				}
