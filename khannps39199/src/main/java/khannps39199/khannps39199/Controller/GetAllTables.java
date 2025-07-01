@@ -84,7 +84,7 @@ public class GetAllTables {
 			while (rs.next()) {
 				String tableName = rs.getString("TABLE_NAME");
 				if (tableName.equals("trace_xe_event_map") || tableName.equals("trace_xe_action_map")
-						|| tableName.equals("SPRING_AI_CHAT_MEMORY") || tableName.equals("Sysdiagrams")) {
+						|| tableName.equals("SPRING_AI_CHAT_MEMORY") || tableName.equals("sysdiagrams")) {
 					continue;
 				}
 				tableNames.add(tableName);
