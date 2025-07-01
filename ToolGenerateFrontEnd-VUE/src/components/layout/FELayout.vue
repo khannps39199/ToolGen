@@ -65,19 +65,19 @@
                                 <button @click="HandelGenDTOS" class="btn custom-dtos">DTOS</button>
                                 <button @click="HandelGenMapper" class="btn custom-mapper">Mapper</button>
                                 <button @click="HandelGenRepository" class="btn custom-repository">Repository</button>
-                                <button @click="HandelGenDefineRepositoryToService"
-                                    class="btn custom-define">DefineRepoToService</button>
-                                <button @click="HandelGenControllerAPIBasic"
-                                    class="btn custom-controller">ControllerAPI</button>
+                                <button @click="HandelGenDefineRepositoryToService" class="btn custom-define">Define
+                                    Repository Service</button>
+                                <button @click="HandelGenControllerAPIBasic" class="btn custom-controller">Controller
+                                    API</button>
                                 <button @click="HandleGenIndex" class="btn custom-index">Generate Index</button>
                                 <button @click="HandleGenAdminRouter" class="btn custom-admin-router">Generate
                                     AdminRouter</button>
                                 <button @click="HandleGenForm" class="btn custom-form">Generate Form</button>
                                 <button @click="ModifiersReposotory" class="btn custom-mod-repo">Modifiers
                                     Reposotory</button>
-                                <button @click="ModifiersService"
-                                    class="btn custom-mod-service">ModifiersService</button>
-                                <button @click="ModifiersAPI" class="btn custom-mod-service">ModifiersAPI</button>
+                                <button @click="ModifiersService" class="btn custom-mod-service">Modifiers
+                                    Service</button>
+                                <button @click="ModifiersAPI" class="btn custom-mod-service">Modifiers API</button>
                             </div>
 
                         </div>
