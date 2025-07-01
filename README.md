@@ -6,8 +6,9 @@ nhấn SELECT để connect lần đầu và lấy tất các DATABASE
 ![image](https://github.com/user-attachments/assets/15ea5fb8-c97b-461f-a07d-9e4e436ff401)  
 chọn bảng cần Gen hoặc mặc định là GEN TẤT CẢ  
 nhất SELECT để cập nhật CONNECTINFOHOLDER  
-![image](https://github.com/user-attachments/assets/e694aa9b-c91e-4748-a2ce-f04875b0034d)
-chọn các chức năng tương ứng với tên nút
+![image](https://github.com/user-attachments/assets/cbf764b0-81cf-4e3e-9e45-ff344b4551d0)  
+Chọn các chức năng tương ứng với tên nút:  
+
 
 
 
