@@ -154,6 +154,41 @@ watch(() => model.tblName, async () => {
 
 </script>
 <style scoped>
+form {
+    padding: 1rem;
+}
+
+.form-label {
+    font-weight: 600;
+}
+
+.form-control,
+.form-select {
+    border-radius: 6px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+}
+
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+}
+
+button[type="submit"] {
+    margin-top: 1rem;
+    font-size: 1.1rem;
+    padding: 10px;
+}
+
 .button-grid {
     /* display: flex;
     flex-wrap: wrap;
