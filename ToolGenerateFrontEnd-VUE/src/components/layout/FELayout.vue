@@ -171,7 +171,7 @@ form {
 .form-control:focus,
 .form-select:focus {
     border-color: #80bdff;
-    box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0.15rem rgba(0, 123, 255, 0.25);
 }
 
 .card {
