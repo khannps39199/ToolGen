@@ -262,13 +262,13 @@ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 */
 .action-holder {
     color: white;
+    position: relative;
     font-style: bold;
     background-color: #9ac6f0;
     /* Light background */
-    padding: 1.5rem;
+    padding: 2rem;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    margin-top: 2rem;
 }
 
 .list-group {
