@@ -35,7 +35,6 @@ public class RestAPI {
 	GetAllTables getAllTables;
 	@Autowired
 	private ConnectInfoHolder connectInfoHolder;
-
 	HandleGenerateForAPI handelGen = new HandleGenerateForAPI();
 
 	@PostMapping("/ConnectSQL")
@@ -85,7 +84,6 @@ public class RestAPI {
 				List<ForeignKeyInfo> ExportedKeysInfos = getAllTables.getExportedForeignKeys(ds, conInfo.getTblName());
 				handelGen.HandleGenerateEntity(packageNameSplit, listtBLColumn, conInfo, ImportedKeysInfos,
 						ExportedKeysInfos);
-
 			} else {
 				List<String> listtBL = getAllTables.getAllTableNames();
 				for (String tableItem : listtBL) {
@@ -133,7 +131,6 @@ public class RestAPI {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("handelGenDTOS failed: " + e.getMessage());
 		}
-
 	}
 
 	@GetMapping("/HandelGenMapper")
@@ -284,7 +281,6 @@ public class RestAPI {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body("handelGenControllerAPIBasic failed: " + e.getMessage());
 		}
-
 	}
 
 	@GetMapping("/HandleGenForm")

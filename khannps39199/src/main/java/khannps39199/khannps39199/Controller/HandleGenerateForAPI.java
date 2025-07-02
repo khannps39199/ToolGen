@@ -63,7 +63,6 @@ public class HandleGenerateForAPI {
 			itemFeilds.put("javaType", javaType);
 			String resultTosetUpdatable = !variableFeildName.contains("create") ? (e.getName().concat("\""))
 					: (e.getName().concat("\",updatable = false"));
-
 			itemFeilds.put("columnName", resultTosetUpdatable);
 			itemFeilds.put("fieldName", variableFeildName);
 			itemFeilds.put("isCreUp", variableFeildName.contains("create") ? "@CreationTimestamp"
@@ -77,7 +76,6 @@ public class HandleGenerateForAPI {
 			itemForeignKeys.put("fkColumnName", e.getFkColumn());
 			itemForeignKeys.put("pkClassName", firstUpcaseClassNameImportKey);
 			itemForeignKeys.put("camelFieldName", variableCamelFieldName);
-
 			foreignKeys.add(itemForeignKeys);
 		}
 		String idType = switch (listtBLColumn.get(0).getSqlType().toUpperCase()) {
@@ -153,7 +151,6 @@ public class HandleGenerateForAPI {
 			;
 			String firstUpcaseClassNameImportKey = commonFunction.ConvertToClassName(e.getPkTable());
 			String variableCamelFieldName = commonFunction.ConvertToVariableName(e.getPkTable());
-
 			itemForeignKeysForDTOS.put("fkColumnName", e.getFkColumn());
 			itemForeignKeysForDTOS.put("pkClassName", firstUpcaseClassNameImportKey);
 			itemForeignKeysForDTOS.put("camelFieldName", variableCamelFieldName);
@@ -173,7 +170,6 @@ public class HandleGenerateForAPI {
 		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
 		MustacheFactory mf = new DefaultMustacheFactory();
 		Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
-
 		new File(conInfo.getBackEndSourceURL() + "/DTOS").mkdirs(); // Tạo thư mục nếu chưa có
 		mf = new DefaultMustacheFactory();
 		mustache = mf.compile("TemplateToGenerate/DTOS.mustache");
@@ -188,14 +184,12 @@ public class HandleGenerateForAPI {
 			throws SQLException, IOException {
 		Map<String, Object> contextForMapper = new HashMap<>();
 		String firstUpcaseClassName = commonFunction.ConvertToClassName(conInfo.getTblName());
-
 		contextForMapper.put("className", firstUpcaseClassName);
 		contextForMapper.put("tableName", conInfo.getTblName());
 		contextForMapper.put("packageName",
 				packageNameSplit.get(packageNameSplit.size() - 3) + "."
 						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
 						+ packageNameSplit.get(packageNameSplit.size() - 1));
-
 		List<Map<String, String>> fieldsForMapper = new ArrayList<>();
 		List<Map<String, String>> fieldsForMapperToObject = new ArrayList<>();
 		List<Map<String, String>> foreignServiceForMapperToObject = new ArrayList<>();
@@ -236,7 +230,6 @@ public class HandleGenerateForAPI {
 				itemFeildsForMapper.put("fieldName",
 						"entity.get" + commonFunction.ConvertToClassName(e.getName()) + "(),");
 			}
-
 			fieldsForMapper.add(itemFeildsForMapper);
 			fieldsForMapperToObject.add(itemFeildsForMapper);
 		}
@@ -281,7 +274,6 @@ public class HandleGenerateForAPI {
 			handleLastComaForMapperToObject.put("fieldName", lastFieldForMapperToObject);
 			fieldsForMapperToObject.set(fieldsForMapperToObject.size() - 1, handleLastComaForMapperToObject);
 		}
-
 		contextForMapper.put("fields", fieldsForMapper);
 		contextForMapper.put("fieldsmapperToObject", fieldsForMapperToObject);
 		contextForMapper.put("foreignService", foreignServiceForMapperToObject);
@@ -290,7 +282,6 @@ public class HandleGenerateForAPI {
 		new File(conInfo.getBackEndSourceURL() + "/Entity").mkdirs(); // Tạo thư mục nếu chưa có
 		MustacheFactory mf = new DefaultMustacheFactory();
 		Mustache mustache = mf.compile("TemplateToGenerate/entity.mustache");
-
 		new File(conInfo.getBackEndSourceURL() + "/Mapper").mkdirs(); // Tạo thư mục nếu chưa có
 		mf = new DefaultMustacheFactory();
 		mustache = mf.compile("TemplateToGenerate/Mapper.mustache");

@@ -49,7 +49,6 @@ public class HandleGenerate {
 				packageNameSplit.get(packageNameSplit.size() - 3) + "."
 						+ packageNameSplit.get(packageNameSplit.size() - 2) + "."
 						+ packageNameSplit.get(packageNameSplit.size() - 1));
-
 		List<Map<String, String>> fields = new ArrayList<>();
 		List<Map<String, String>> fieldsForDTOS = new ArrayList<>();
 		List<Map<String, String>> fieldsForMapper = new ArrayList<>();
@@ -94,10 +93,8 @@ public class HandleGenerate {
 			itemFeilds.put("javaType", javaType);
 			itemFeilds.put("columnName", e.getName());
 			itemFeilds.put("fieldName", variableFeildName);
-
 			itemFeilds.put("isCreUp", variableFeildName.contains("create") ? "@CreationTimestamp"
 					: (variableFeildName.contains("update") ? "@UpdateTimestamp" : ""));
-
 			itemFeildsForDTOS.put("javaType", javaType);
 			itemFeildsForDTOS.put("columnName", e.getName());
 			itemFeildsForDTOS.put("fieldName", variableFeildName);
@@ -111,7 +108,6 @@ public class HandleGenerate {
 						itemFeildsForFormFE.put("type", "password");
 						itemFeildsForFormFE.put("fieldName", variableFeildName);
 						fieldsForFromFE.add(itemFeildsForFormFE);
-
 					} else {
 						itemFeildsForFormFE.put("type", type);
 						itemFeildsForFormFE.put("fieldName", variableFeildName);
@@ -186,7 +182,6 @@ public class HandleGenerate {
 			fieldsForMapperToObject.set(fieldsForMapperToObject.size() - 1, handleLastComaForMapperToObject);
 		}
 		context.put("isInteger", idType.equals("int") ? "@GeneratedValue(strategy = GenerationType.IDENTITY)" : "");
-
 		context.put("exportKeys", exportKeys);
 		context.put("fields", fields);
 		contextForDTOS.put("fields", fieldsForDTOS);
