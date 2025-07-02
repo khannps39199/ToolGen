@@ -449,7 +449,7 @@ public class HandleGenerateForAPI {
 			case "BIGINT" -> "number";
 			case "BIT" -> "text";
 			case "DECIMAL" -> "number";
-			case "DATE", "DATETIME", "TIMESTAMP" -> "datetime";
+			case "DATE", "DATETIME", "TIMESTAMP" -> "datetime-local";
 			default -> "text"; // fallback
 			};
 			boolean isExistsKey = importedKeysInfosList.stream()
@@ -481,7 +481,7 @@ public class HandleGenerateForAPI {
 								itemFieldsForFromFETypeNumberTo.put("fieldName", variableFeildName + "To");
 								fieldsForFromFE.add(itemFieldsForFromFETypeNumberFrom);
 								fieldsForFromFE.add(itemFieldsForFromFETypeNumberTo);
-							} else if (type.equals("datetime")) {
+							} else if (type.equals("datetime-local")) {
 								Map<String, String> itemFieldsForFromFETypeNumberFrom = new HashMap<>();
 								Map<String, String> itemFieldsForFromFETypeNumberTo = new HashMap<>();
 								itemFieldsForFromFETypeNumberFrom.put("type", type);
