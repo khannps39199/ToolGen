@@ -95,7 +95,9 @@
                             {{ log }}
                         </li>
                     </ul>
-                    <button @click="clearLogs">Clear action logs</button>
+                    <!-- <div class="btn clear-actions"> -->
+                    <button class="btn clear-actions" @click="clearLogs">Clear action logs</button>
+                    <!-- </div> -->
                 </div>
             </div>
         </div>
@@ -230,6 +232,15 @@ button[type="submit"] {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
+}
+
+.clear-actions {
+    display: block;
+    margin: 1rem auto 0 auto;
+    /* top auto bottom auto */
+    padding: 8px 16px;
+    font-weight: bold;
+    border-radius: 6px;
 }
 
 .btn {
