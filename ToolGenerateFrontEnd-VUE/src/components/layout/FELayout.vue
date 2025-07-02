@@ -63,7 +63,7 @@
                                     </button>
                                 </div>
                             </form>
-                            <div class="grid">
+                            <div class="grid button-holder">
                                 <button @click="HandelGenEntity" class="btn custom-entity">Entity</button>
                                 <button @click="HandelGenDTOS" class="btn custom-dtos">DTOS</button>
                                 <button @click="HandelGenMapper" class="btn custom-mapper">Mapper</button>
@@ -188,9 +188,7 @@ watch(() => model.tblName, async () => {
 
 </script>
 <style scoped>
-form {
-    padding: 1rem;
-}
+form {}
 
 .form-label {
     font-weight: 600;
@@ -317,6 +315,10 @@ ul.list-group {
 .btn:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.button-holder {
+    padding-top: 1rem;
 }
 
 /* 🎨 Individual button colors */
