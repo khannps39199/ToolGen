@@ -86,13 +86,16 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xxl-4 col-xl-8 col-lg-10 col-md-12 mt-4">
-                    <h5>Action Log</h5>
+                <div class="action-holder col-xxl-4 col-xl-8 col-lg-10 col-md-12 ">
+                    <div class="text-holder">
+                        <h2>Action Log</h2>
+                    </div>
                     <ul class="list-group">
                         <li v-for="(log, index) in logActionList" :key="index" class="list-group-item">
                             {{ log }}
                         </li>
                     </ul>
+                    <button @click="clearLogs">Clear action logs</button>
                 </div>
             </div>
         </div>
@@ -114,6 +117,9 @@ const isConnected = ref(false);
 const listDB = ref([])
 const listtBL = ref([])
 const logActionList = ref([])
+function clearLogs() {
+    logActionList.value = [];
+}
 async function handleConnect() {
     listDB.value = await GenService.setConnect(model)
     logActionList.value.push("Connected to database: " + model.dbName);
@@ -215,9 +221,14 @@ button[type="submit"] {
     padding: 10px;
 }
 
+.text-holder {
+    text-align: center;
+}
+
+
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
 }
 
@@ -229,6 +240,59 @@ button[type="submit"] {
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* .action-holder {
+    background-color: #f8f9fa;
+border-radius: 10px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+*/
+.action-holder {
+    color: white;
+    font-style: bold;
+    background-color: #9ac6f0;
+    /* Light background */
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+}
+
+.list-group {
+    max-height: 300px;
+    overflow-y: auto;
+    font-family: monospace;
+    font-size: 0.95rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.list-group-item {
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    transition: background-color 0.2s ease;
+}
+
+.list-group-item:hover {
+    background-color: #f1f3f5;
+}
+
+.action-holder button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.action-holder button:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
 }
 
 ul.list-group {
