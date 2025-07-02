@@ -3,45 +3,48 @@
     <body>
         <div class="container-xxl mt-5">
             <div class="row justify-content-center">
-                <div class="col-xxl-6">
+                <div class="col-xxl-8 col-xl-8 col-lg-10 col-md-12">
                     <div class="card shadow">
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0">Connect to SQL</h5>
                         </div>
                         <div class="card-body">
                             <form @submit.prevent="handleConnect()">
-                                <div class="mb-3">
-                                    <label for="username" class="form-label">Username</label>
-                                    <input type="text" class="form-control" id="username" name="username"
-                                        v-model="model.userName" />
+                                <dic class="grid">
+                                    <div class="mb-3">
+                                        <label for="username" class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="username" name="username"
+                                            v-model="model.userName" />
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="password" class="form-label">Password</label>
+                                        <input type="text" class="form-control" id="password" name="password"
+                                            v-model="model.password" />
+                                    </div>
+                                </dic>
+                                <div class="grid">
+                                    <div class="mb-3">
+                                        <label for="database" class="form-label">Database</label>
+                                        <select class="form-select" name="databaseSelect" id="database"
+                                            v-model="model.dbName">
+                                            <option value="master">master</option>
+                                            <option v-for="item in listDB" :key="item" :value="item">
+                                                {{ item }}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="tableSelect" class="form-label">Table</label>
+                                        <select class="form-select" name="tableSelect" id="tableSelect"
+                                            v-model="model.tblName">
+                                            <option selected value="All">All</option>
+                                            <option v-for="item in listtBL" :key="item" :value="item">
+                                                {{ item }}
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="password" class="form-label">Password</label>
-                                    <input type="text" class="form-control" id="password" name="password"
-                                        v-model="model.password" />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="database" class="form-label">Database</label>
-                                    <select class="form-select" name="databaseSelect" id="database"
-                                        v-model="model.dbName">
-                                        <option value="master">master</option>
-                                        <option v-for="item in listDB" :key="item" :value="item">
-                                            {{ item }}
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="mb-3">
-                                    <label for="tableSelect" class="form-label">Table</label>
-                                    <select class="form-select" name="tableSelect" id="tableSelect"
-                                        v-model="model.tblName">
-                                        <option selected value="All">All</option>
-                                        <option v-for="item in listtBL" :key="item" :value="item">
-                                            {{ item }}
-                                        </option>
-                                    </select>
-                                </div>
                                 <div class="mb-3">
                                     <label for="backendsourceURl" class="form-label">backendsourceURl</label>
                                     <input type="text" class="form-control" id="backendsourceURl"
@@ -60,7 +63,7 @@
                                     </button>
                                 </div>
                             </form>
-                            <div class="button-grid">
+                            <div class="grid">
                                 <button @click="HandelGenEntity" class="btn custom-entity">Entity</button>
                                 <button @click="HandelGenDTOS" class="btn custom-dtos">DTOS</button>
                                 <button @click="HandelGenMapper" class="btn custom-mapper">Mapper</button>
@@ -83,6 +86,14 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-xxl-4 col-xl-8 col-lg-10 col-md-12 mt-4">
+                    <h5>Action Log</h5>
+                    <ul class="list-group">
+                        <li v-for="(log, index) in logActionList" :key="index" class="list-group-item">
+                            {{ log }}
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
     </body>
@@ -102,54 +113,69 @@ const model = reactive({
 const isConnected = ref(false);
 const listDB = ref([])
 const listtBL = ref([])
+const logActionList = ref([])
 async function handleConnect() {
     listDB.value = await GenService.setConnect(model)
-    console.log(model.dbName)
+    logActionList.value.push("Connected to database: " + model.dbName);
 }
 async function HandelGenEntity() {
-    await GenService.HandelGenEntity()
+    const responseAction = await GenService.HandelGenEntity()
+    logActionList.value.push(responseAction)
 }
 async function HandelGenDTOS() {
-    await GenService.HandelGenDTOS()
+    const responseAction = await GenService.HandelGenDTOS()
+    logActionList.value.push(responseAction)
 }
 async function HandelGenMapper() {
-    await GenService.HandelGenMapper()
+    const responseAction = await GenService.HandelGenMapper()
+    logActionList.value.push(responseAction)
 }
 async function HandelGenRepository() {
-    await GenService.HandelGenRepository()
+    const responseAction = await GenService.HandelGenRepository()
+    logActionList.value.push(responseAction)
 }
 async function HandelGenDefineRepositoryToService() {
-    await GenService.HandelGenDefineRepositoryToService()
+    const responseAction = await GenService.HandelGenDefineRepositoryToService()
+    logActionList.value.push(responseAction)
 }
 async function HandelGenControllerAPIBasic() {
-    await GenService.HandelGenControllerAPIBasic()
+    const responseAction = await GenService.HandelGenControllerAPIBasic()
+    logActionList.value.push(responseAction)
 }
 async function HandleGenAdminRouter() {
-    await GenService.HandleGenAdminRouter()
+    const responseAction = await GenService.HandleGenAdminRouter()
+    logActionList.value.push(responseAction)
 }
 async function HandleGenIndex() {
-    await GenService.HandleGenIndex()
+    const responseAction = await GenService.HandleGenIndex()
+    logActionList.value.push(responseAction)
 }
 async function HandleGenForm() {
-    await GenService.HandleGenForm()
+    const responseAction = await GenService.HandleGenForm()
+    logActionList.value.push(responseAction)
 }
 
 async function ModifiersReposotory() {
-    await GenService.ModifiersReposotory()
+    const responseAction = await GenService.ModifiersReposotory()
+    logActionList.value.push(responseAction)
 }
 async function ModifiersService() {
-    await GenService.ModifiersService()
+    const responseAction = await GenService.ModifiersService()
+    logActionList.value.push(responseAction)
 }
 async function ModifiersAPI() {
-    await GenService.ModifiersAPI()
+    const responseAction = await GenService.ModifiersAPI()
+    logActionList.value.push(responseAction)
 }
 
 watch(() => model.dbName, async () => {
     listtBL.value = await GenService.getTableName(model.dbName)
+    logActionList.value.push("Provided Database name: " + model.dbName);
 })
 
 watch(() => model.tblName, async () => {
     await GenService.setConnect(model)
+    logActionList.value.push("Provided table name: " + model.tblName);
 })
 
 </script>
@@ -189,15 +215,10 @@ button[type="submit"] {
     padding: 10px;
 }
 
-.button-grid {
-    /* display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 16px; */
+.grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
-    margin-top: 1rem;
 }
 
 .btn {
@@ -208,6 +229,14 @@ button[type="submit"] {
     border-radius: 8px;
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+ul.list-group {
+    max-height: 250px;
+    overflow-y: auto;
+    margin-top: 1rem;
+    font-family: monospace;
+    font-size: 0.95rem;
 }
 
 .btn:hover {

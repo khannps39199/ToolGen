@@ -19,94 +19,85 @@ const GenService = {
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async getDaTabaseName() {
         try {
             const response = await api.get('/GetAllDataBaseName');
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async getTableName(dbName) {
         try {
             console.log(dbName)
             const response = await api.get(`/GetAllTableName/${dbName}`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async HandelGenEntity() {
         try {
             const response = await api.get(`/HandelGenEntity`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async HandelGenDTOS() {
         try {
             const response = await api.get(`/HandelGenDTOS`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async HandelGenMapper() {
         try {
             const response = await api.get(`/HandelGenMapper`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async HandelGenRepository() {
         try {
             const response = await api.get(`/HandelGenRepository`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async HandelGenDefineRepositoryToService() {
         try {
             const response = await api.get(`/HandelGenDefineRepositoryToService`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async HandelGenControllerAPIBasic() {
         try {
             const response = await api.get(`/HandelGenControllerAPIBasic`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async HandleGenIndex() {
         try {
             const response = await api.get(`/HandleGenIndex`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
@@ -116,51 +107,46 @@ const GenService = {
     async HandleGenForm() {
         try {
             const response = await api.get(`/HandleGenForm`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async HandleGenAdminRouter() {
         try {
             const response = await api.get(`/HandleGenAdminRouter`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async ModifiersReposotory() {
         try {
             const response = await api.get(`/ModifiersReposotory`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async ModifiersService() {
         try {
             const response = await api.get(`/ModifiersService`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     },
     async ModifiersAPI() {
         try {
             const response = await api.get(`/ModifiersAPI`);
-            console.log('Response:', response.data);
             return response.data;
         } catch (error) {
             console.error('Connection failed:', error);
-            return null;
+            return error;
         }
     }
 }
