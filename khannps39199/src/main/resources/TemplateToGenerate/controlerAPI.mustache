@@ -33,15 +33,18 @@ public class {{Classname}}API {
 	private {{Classname}}Mapper {{variableName}}Mapper;
 
 	@GetMapping("/admin/{{Classname}}")
-	public ResponseEntity<List<{{Classname}}DTOS>> getAll{{Classname}}Api(	
+	public ResponseEntity<?> getAll{{Classname}}Api(	
 			@RequestParam(defaultValue = "0") int page,
-			@RequestParam(defaultValue = "5") int size) {
-			
-		List<{{Classname}}DTOS> {{variableName}} = new ArrayList<{{Classname}}DTOS>();
-		{{variableName}}Service.{{variableName}}FindAll(page, size).forEach(e -> {
-			{{variableName}}.add({{variableName}}Mapper.mapper(e));
-		});
-		return ResponseEntity.ok({{variableName}});
+			@RequestParam(defaultValue = "5") int size, @RequestParam(defaultValue = "0") Map<String, Object> filters) {
+		filters.remove("page");
+		filters.remove("size");
+		Page<{{Classname}}> pageResult = {{variableName}}Service.{{variableName}}FindAll(page, size, filters);
+		List<{{Classname}}DTOS> {{variableName}} = pageResult.getContent().stream().map({{variableName}}Mapper::mapper)
+				.collect(Collectors.toList());
+		Map<String, Object> response = new HashMap<>();
+		response.put("content", {{variableName}});
+		response.put("totalPages", pageResult.getTotalPages());
+		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping("/admin/{{Classname}}/{id}")
