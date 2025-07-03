@@ -654,12 +654,39 @@ public class HandleGenerateForAPI {
 		case "DATE", "DATETIME", "TIMESTAMP" -> "LocalDateTime";
 		default -> "String"; // fallback
 		};
-		String updatedContent = Files.lines(path).map(line -> {
+		String updatedContent = Files.lines(path).flatMap(line -> {
 			if (line.contains(lowerClassName + "Service." + lowerClassName + "FindAll(page, size)")) {
-				return line.replace(lowerClassName + "Service." + lowerClassName + "FindAll(page, size)",
-						lowerClassName + "Service." + lowerClassName + "FindAll(page, size, filters)");
+				return Stream.of(line.replace(lowerClassName + "Service." + lowerClassName + "FindAll(page, size)",
+						lowerClassName + "Service." + lowerClassName + "FindAll(page, size, filters)"));
 			}
-			return line;
+			if (line.contains("public ResponseEntity<List<" + firstUpcaseClassName + "DTOS>> getAll"
+					+ firstUpcaseClassName + "Api(@RequestParam(defaultValue = \"0\") int page,\n"
+					+ "			@RequestParam(defaultValue = \"5\") int size, @RequestParam(defaultValue = \"0\") Map<String, Object> filters) {")) {
+				return Stream.of(line.replace("public ResponseEntity<List<" + firstUpcaseClassName + "DTOS>> getAll"
+						+ firstUpcaseClassName + "Api(@RequestParam(defaultValue = \"0\") int page,\n"
+						+ "			@RequestParam(defaultValue = \"5\") int size, @RequestParam(defaultValue = \"0\") Map<String, Object> filters) {",
+						"public ResponseEntity<?> getAll" + firstUpcaseClassName
+								+ "Api(@RequestParam(defaultValue = \"0\") int page,\n"
+								+ "			@RequestParam(defaultValue = \"5\") int size, @RequestParam(defaultValue = \"0\") Map<String, Object> filters) {"));
+			}
+			if (line.contains("filters.remove(\"size\");")) {
+				return Stream.of("filters.remove(\"size\");",
+						"Page<" + firstUpcaseClassName + "> pageResult = " + lowerClassName + "Service."
+								+ lowerClassName + "FindAll(page, size, filters);",
+						"List<" + firstUpcaseClassName + "DTOS> " + lowerClassName
+								+ " = pageResult.getContent().stream().map(" + lowerClassName + "Mapper::mapper)\n"
+								+ "								.collect(Collectors.toList());",
+						"Map<String, Object> response = new HashMap<>();",
+						"response.put(\"content\", " + lowerClassName + ");",
+						"response.put(\"totalPages\", pageResult.getTotalPages());",
+						"return ResponseEntity.ok(response);");
+			}
+
+			if (line.contains("package com.aos.AOSBE.API;")) {
+				return Stream.of("package com.aos.AOSBE.API;", "import java.util.stream.Collectors;",
+						"import org.springframework.data.domain.Page;", "import java.util.HashMap;");
+			}
+			return Stream.of(line);
 		}).collect(Collectors.joining(System.lineSeparator()));
 
 		try {
@@ -699,17 +726,21 @@ public class HandleGenerateForAPI {
 //						"@Autowired");
 //			}
 
-			if (line.contains(
-					"List<" + firstUpcaseClassName + "> " + lowerClassName + "FindAll(int page, int size) {")) {
+			if (line.contains("List<" + firstUpcaseClassName + "> " + lowerClassName
+					+ "FindAll(int page, int size, Map<String, Object> filters) {")) {
 				return Stream.of(line.replace(
-						"List<" + firstUpcaseClassName + "> " + lowerClassName + "FindAll(int page, int size) {",
 						"List<" + firstUpcaseClassName + "> " + lowerClassName
+								+ "FindAll(int page, int size, Map<String, Object> filters) {",
+						"Page<" + firstUpcaseClassName + "> " + lowerClassName
 								+ "FindAll(int page, int size, Map<String, Object> filters) {"));
 			}
 
 			if (line.contains("return " + lowerClassName + "Repository.findAll(pageable).getContent();")) {
 				return Stream.of("Specification<" + firstUpcaseClassName + "> spec = specBuilder.buildFilter(filters);",
-						"return " + lowerClassName + "Repository.findAll(spec, pageable).getContent();");
+						"return " + lowerClassName + "Repository.findAll(spec, pageable);");
+			}
+			if (line.contains("return " + lowerClassName + "Repository.findAll(spec, pageable).getContent();")) {
+				return Stream.of("return " + lowerClassName + "Repository.findAll(spec, pageable);");
 			}
 
 			return Stream.of(line);

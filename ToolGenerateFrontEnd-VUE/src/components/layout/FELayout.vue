@@ -93,6 +93,14 @@
                     <ul class="list-group">
                         <li v-for="(log, index) in logActionList" :key="index" class="list-group-item">
                             {{ log }}
+
+                        </li>
+                        <li class="list-group-item">
+                            <div v-if="loading" class="text-primary">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                     <!-- <div class="btn clear-actions"> -->
@@ -115,6 +123,8 @@ const model = reactive({
     frontEndSourceURL: '',
 }
 );
+
+const loading = ref(false)
 const isConnected = ref(false);
 const listDB = ref([])
 const listtBL = ref([])
@@ -127,53 +137,89 @@ async function handleConnect() {
     logActionList.value.push("Connected to database: " + model.dbName);
 }
 async function HandelGenEntity() {
+    logActionList.value.push("Inprocess: Generating Entity for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.HandelGenEntity()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function HandelGenDTOS() {
+    logActionList.value.push("Inprocess: Generating DTOS for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.HandelGenDTOS()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function HandelGenMapper() {
+    logActionList.value.push("Inprocess: Generating Mapper for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.HandelGenMapper()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function HandelGenRepository() {
+    logActionList.value.push("Inprocess: Generating Repository for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.HandelGenRepository()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function HandelGenDefineRepositoryToService() {
+    logActionList.value.push("Inprocess: Generating Define Repository to Service for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.HandelGenDefineRepositoryToService()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function HandelGenControllerAPIBasic() {
+    logActionList.value.push("Inprocess: Generating Controller API Basic for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.HandelGenControllerAPIBasic()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function HandleGenAdminRouter() {
+    logActionList.value.push("Inprocess: Generating Admin Router for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.HandleGenAdminRouter()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function HandleGenIndex() {
+    logActionList.value.push("Inprocess: Generating Index for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.HandleGenIndex()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function HandleGenForm() {
+    logActionList.value.push("Inprocess: Generating Form for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.HandleGenForm()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 
 async function ModifiersReposotory() {
+    logActionList.value.push("Inprocess: Modifiers Reposotory for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.ModifiersReposotory()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function ModifiersService() {
+    logActionList.value.push("Inprocess: Modifiers Service for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.ModifiersService()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 async function ModifiersAPI() {
+    logActionList.value.push("Inprocess: Modifiers API for table " + model.tblName);
+    loading.value = true;
     const responseAction = await GenService.ModifiersAPI()
     logActionList.value.push(responseAction)
+    loading.value = false;
 }
 
 watch(() => model.dbName, async () => {
@@ -251,13 +297,6 @@ button[type="submit"] {
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* .action-holder {
-    background-color: #f8f9fa;
-border-radius: 10px;
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-*/
 .action-holder {
     color: white;
     position: relative;
@@ -270,8 +309,6 @@ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .list-group {
-    max-height: 300px;
-    overflow-y: auto;
     font-family: monospace;
     font-size: 0.95rem;
     border-radius: 8px;
@@ -305,8 +342,6 @@ box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 ul.list-group {
-    max-height: 250px;
-    overflow-y: auto;
     margin-top: 1rem;
     font-family: monospace;
     font-size: 0.95rem;
