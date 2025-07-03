@@ -8,7 +8,8 @@ chọn bảng cần Gen hoặc mặc định là GEN TẤT CẢ
 nhất SELECT để cập nhật CONNECTINFOHOLDER  
 ![image](https://github.com/user-attachments/assets/cbf764b0-81cf-4e3e-9e45-ff344b4551d0)  
 Chọn các chức năng tương ứng với tên nút:  
-
+##Đây là sản phẩm được xây dựng dựa trên cấu trúc cơ bản được generate bằng tool:  
+https://github.com/lllloc123h/AllinOneStore.git
 
 
 
