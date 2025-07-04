@@ -23,15 +23,9 @@ public class {{className}} {
     @Column(name = "{{{columnName}}})
     private {{javaType}} {{fieldName}};
 {{/fields}}
-   
 {{#foreignKeys}}
     @ManyToOne
     @JoinColumn(name = "{{fkColumnName}}")
     private {{pkClassName}} {{camelFieldName}};
 {{/foreignKeys}}
-
-
-
-
-
 }
