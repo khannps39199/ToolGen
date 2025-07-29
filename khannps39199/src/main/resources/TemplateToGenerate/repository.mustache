@@ -3,6 +3,7 @@ package {{packageName}}.Repository;
 import {{packageName}}.Entity.{{className}};
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 @Repository
 public interface {{className}}Repository extends JpaRepository<{{className}}, {{idType}}>, JpaSpecificationExecutor<{{className}}> {

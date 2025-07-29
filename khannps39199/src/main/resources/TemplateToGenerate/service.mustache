@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import {{packageName}}.Entity.*;
 import {{packageName}}.Repository.*;
 import java.util.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -18,9 +20,9 @@ public class {{className}}Service {
 	@Autowired
     private {{className}}Repository {{variableClassName}}Repository;
 
-    public List<{{className}}> {{variableClassName}}FindAll(int page, int size, Map<String, Object> filters) {
+    public Page<{{className}}> {{variableClassName}}FindAll(int page, int size, Map<String, Object> filters) {
     	Pageable pageable = PageRequest.of(page, size);
-		Specification<Accounts> spec = specBuilder.buildFilter(filters);
+		Specification<{{className}}> spec = specBuilder.buildFilter(filters);
 		return {{variableClassName}}Repository.findAll(spec,pageable);
     }
     @Transactional
